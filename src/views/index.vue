@@ -1,7 +1,7 @@
 <template>
   <div class="app-container home">
     <el-row :gutter="20">
-      <el-col :sm="24" :lg="24">
+      <el-col :sm="24" :lg="16">
         <blockquote class="text-warning" style="font-size: 14px">
           【阿里云特惠专区】
           <el-link href="https://www.aliyun.com/minisite/goods?userCode=uotn5vt1&share_source=copy_link" type="primary" target="_black">
@@ -32,6 +32,13 @@
           <br />
           <h4 class="text-danger">云产品通用红包，可叠加官网常规优惠使用。(仅限新用户)</h4>
         </blockquote>
+      </el-col>
+      <el-col :lg="8">
+        <el-carousel :interval="4000" height="220px">
+          <el-carousel-item v-for="item in promoteList" :key="item.id">
+            <img :src="item.imgUrl" :title="item.title" style="cursor: pointer; width: 100%" width="100%" @click="goTarget(item.link)" />
+          </el-carousel-item>
+        </el-carousel>
       </el-col>
     </el-row>
     <el-row :gutter="20">
@@ -143,6 +150,38 @@ const version = defaultSettings.version
 function goTarget(url) {
   window.open(url, '__blank')
 }
+const promoteList = ref([
+  {
+    id: 1,
+    title: '【腾讯云】推广者专属福利，新客户无门槛领取总价值高达2860元代金券，每种代金券限量500张，先到先得。',
+    imgUrl: 'http://www.izhaorui.cn/images/banner/新用户专享470x250.jpg',
+    link: 'https://curl.qcloud.com/5J4nag8D',
+  },
+  {
+    id: 2,
+    title: '',
+    imgUrl: 'http://www.izhaorui.cn/images/banner/banner3.jpg',
+    link: 'https://curl.qcloud.com/4yEoRquq',
+  },
+  {
+    id: 3,
+    title: '【腾讯云】买云服务器，参与礼品兑换、抽奖，最高送价值8000元IPad，还有Bose耳机、千元京东卡等您来！',
+    imgUrl: 'http://www.izhaorui.cn/images/banner/企业盛夏有礼-470x250.jpg',
+    link: 'https://curl.qcloud.com/CAX9v1Vn',
+  },
+  {
+    id: 4,
+    title: '【腾讯云】DNSPod解析套餐全面升配降价，更高的套餐配置规格，更优的价格方案，全面提升可用性及响应率，专业版限时99元/年！',
+    imgUrl: 'http://www.izhaorui.cn/images/banner/DNS470x250.jpg',
+    link: 'https://curl.qcloud.com/tJlixb8E',
+  },
+  {
+    id: 5,
+    title: '【腾讯云】中小企业福利专场，多款刚需产品，满足企业通用场景需求，云服务器2.5折起',
+    imgUrl: 'http://www.izhaorui.cn/images/banner/企业福利470x250.jpg',
+    link: 'https://curl.qcloud.com/TnaLauo5',
+  },
+])
 </script>
 
 <style scoped lang="scss">

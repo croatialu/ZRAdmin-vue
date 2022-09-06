@@ -20,7 +20,7 @@ export function addSysfile(data) {
   return request({
     url: 'tool/file',
     method: 'post',
-    data: data,
+    data,
   })
 }
 
@@ -32,7 +32,7 @@ export function updateSysfile(data) {
   return request({
     url: 'tool/file',
     method: 'PUT',
-    data: data,
+    data,
   })
 }
 
@@ -42,8 +42,8 @@ export function updateSysfile(data) {
 */
 export function getSysfile(id) {
   return request({
-    url: 'tool/file/' + id,
-    method: 'get'
+    url: `tool/file/${id}`,
+    method: 'get',
   })
 }
 
@@ -53,8 +53,8 @@ export function getSysfile(id) {
 */
 export function delSysfile(pid) {
   return request({
-    url: 'tool/file/' + pid,
-    method: 'delete'
+    url: `tool/file/${pid}`,
+    method: 'delete',
   })
 }
 
@@ -63,7 +63,7 @@ export function exportSysfile(query) {
   return request({
     url: 'tool/file/export',
     method: 'get',
-    params: query
+    params: query,
   })
 }
 

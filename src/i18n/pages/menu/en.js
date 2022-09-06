@@ -19,5 +19,5 @@ export default {
     permissionStr: 'permission',
     isCache: 'isCache',
     menuNameKey: 'menuNameKey',
-  }
+  },
 }

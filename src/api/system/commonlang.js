@@ -17,7 +17,7 @@ export function listCommonLang(query) {
  */
 export function listLangByLocale(locale) {
   return request({
-    url: 'system/CommonLang/list/' + locale,
+    url: `system/CommonLang/list/${locale}`,
     method: 'get',
   })
 }
@@ -30,7 +30,7 @@ export function addCommonLang(data) {
   return request({
     url: 'system/CommonLang',
     method: 'post',
-    data: data,
+    data,
   })
 }
 
@@ -42,7 +42,7 @@ export function updateCommonLang(data) {
   return request({
     url: 'system/CommonLang',
     method: 'PUT',
-    data: data,
+    data,
   })
 }
 
@@ -52,8 +52,8 @@ export function updateCommonLang(data) {
  */
 export function getCommonLang(id) {
   return request({
-    url: 'system/CommonLang/' + id,
-    method: 'get'
+    url: `system/CommonLang/${id}`,
+    method: 'get',
   })
 }
 /**
@@ -62,11 +62,10 @@ export function getCommonLang(id) {
  */
 export function getCommonLangByKey(key) {
   return request({
-    url: 'system/CommonLang/key/' + key,
-    method: 'get'
+    url: `system/CommonLang/key/${key}`,
+    method: 'get',
   })
 }
-
 
 /**
  * 删除多语言配置
@@ -74,8 +73,8 @@ export function getCommonLangByKey(key) {
  */
 export function delCommonLang(pid) {
   return request({
-    url: 'system/CommonLang/' + pid,
-    method: 'delete'
+    url: `system/CommonLang/${pid}`,
+    method: 'delete',
   })
 }
 
@@ -84,6 +83,6 @@ export function exportCommonLang(query) {
   return request({
     url: 'system/CommonLang/export',
     method: 'get',
-    params: query
+    params: query,
   })
 }

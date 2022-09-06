@@ -1,10 +1,10 @@
 /**
- * 判断url是否是http或https 
+ * 判断url是否是http或https
  * @param {string} path
  * @returns {Boolean}
  */
- export function isHttp(url) {
-  return url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1
+export function isHttp(url) {
+  return url.includes('http://') || url.includes('https://')
 }
 
 /**
@@ -12,7 +12,7 @@
  * @param {string} path
  * @returns {Boolean}
  */
- export function isExternal(path) {
+export function isExternal(path) {
   return /^(https?:|mailto:|tel:)/.test(path)
 }
 
@@ -22,7 +22,7 @@
  */
 export function validUsername(str) {
   const valid_map = ['admin', 'editor']
-  return valid_map.indexOf(str.trim()) >= 0
+  return valid_map.includes(str.trim())
 }
 
 /**
@@ -75,9 +75,9 @@ export function validEmail(email) {
  * @returns {Boolean}
  */
 export function isString(str) {
-  if (typeof str === 'string' || str instanceof String) {
+  if (typeof str === 'string' || str instanceof String)
     return true
-  }
+
   return false
 }
 
@@ -86,8 +86,8 @@ export function isString(str) {
  * @returns {Boolean}
  */
 export function isArray(arg) {
-  if (typeof Array.isArray === 'undefined') {
+  if (typeof Array.isArray === 'undefined')
     return Object.prototype.toString.call(arg) === '[object Array]'
-  }
+
   return Array.isArray(arg)
 }

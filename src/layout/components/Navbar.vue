@@ -1,44 +1,3 @@
-<template>
-  <div class="navbar" :data-theme="sideTheme" :class="appStore.device">
-    <hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
-    <template v-if="appStore.device != 'mobile'">
-      <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!settingsStore.topNav" />
-      <top-nav id="topmenu-container" class="topmenu-container" v-if="settingsStore.topNav" />
-    </template>
-
-    <div class="right-menu">
-      <header-search id="header-search" class="right-menu-item" v-if="appStore.device != 'mobile'" />
-      <zr-git title="源码地址" class="right-menu-item" v-if="appStore.device != 'mobile'" />
-      <zr-doc title="文档地址" class="right-menu-item" v-if="appStore.device != 'mobile'" />
-      <screenfull title="全屏" class="right-menu-item" v-if="appStore.device != 'mobile'" />
-      <size-select title="布局大小" class="right-menu-item" />
-      <LangSelect title="语言设置" class="right-menu-item" />
-      <Notice title="通知" class="right-menu-item" />
-
-      <el-dropdown @command="handleCommand" class="right-menu-item avatar-container" trigger="hover">
-        <span class="avatar-wrapper">
-          <img :src="userStore.avatar" class="user-avatar" />
-          <span class="name">{{ userStore.name }}</span>
-          <el-icon><ArrowDown /></el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <router-link to="/user/profile">
-              <el-dropdown-item>{{ $t('layout.personalCenter') }}</el-dropdown-item>
-            </router-link>
-            <el-dropdown-item command="setLayout">
-              <span>{{ $t('layout.layoutSetting') }}</span>
-            </el-dropdown-item>
-            <el-dropdown-item divided command="logout">
-              <span>{{ $t('layout.logOut') }}</span>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import Breadcrumb from '@/components/Breadcrumb'
 import TopNav from '@/components/TopNav'
@@ -54,6 +13,7 @@ import useAppStore from '@/store/modules/app'
 import useUserStore from '@/store/modules/user'
 import useSettingsStore from '@/store/modules/settings'
 
+const emits = defineEmits(['setLayout'])
 const { proxy } = getCurrentInstance()
 const appStore = useAppStore()
 const userStore = useUserStore()
@@ -86,17 +46,57 @@ function logout() {
     })
     .then(() => {
       userStore.logOut().then(() => {
-        location.href = import.meta.env.VITE_APP_ROUTER_PREFIX + 'index';
+        location.href = `${import.meta.env.VITE_APP_ROUTER_PREFIX}index`
       })
     })
     .catch(() => {})
 }
 
-const emits = defineEmits(['setLayout'])
 function setLayout() {
   emits('setLayout')
 }
 </script>
+
+<template>
+  <div class="navbar" :data-theme="sideTheme" :class="appStore.device">
+    <Hamburger id="hamburger-container" :is-active="appStore.sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <template v-if="appStore.device != 'mobile'">
+      <Breadcrumb v-if="!settingsStore.topNav" id="breadcrumb-container" class="breadcrumb-container" />
+      <TopNav v-if="settingsStore.topNav" id="topmenu-container" class="topmenu-container" />
+    </template>
+
+    <div class="right-menu">
+      <HeaderSearch v-if="appStore.device != 'mobile'" id="header-search" class="right-menu-item" />
+      <ZrGit v-if="appStore.device != 'mobile'" title="源码地址" class="right-menu-item" />
+      <ZrDoc v-if="appStore.device != 'mobile'" title="文档地址" class="right-menu-item" />
+      <Screenfull v-if="appStore.device != 'mobile'" title="全屏" class="right-menu-item" />
+      <SizeSelect title="布局大小" class="right-menu-item" />
+      <LangSelect title="语言设置" class="right-menu-item" />
+      <Notice title="通知" class="right-menu-item" />
+
+      <el-dropdown class="right-menu-item avatar-container" trigger="hover" @command="handleCommand">
+        <span class="avatar-wrapper">
+          <img :src="userStore.avatar" class="user-avatar">
+          <span class="name">{{ userStore.name }}</span>
+          <el-icon><ArrowDown /></el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <router-link to="/user/profile">
+              <el-dropdown-item>{{ $t('layout.personalCenter') }}</el-dropdown-item>
+            </router-link>
+            <el-dropdown-item command="setLayout">
+              <span>{{ $t('layout.layoutSetting') }}</span>
+            </el-dropdown-item>
+            <el-dropdown-item divided command="logout">
+              <span>{{ $t('layout.logOut') }}</span>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .el-menu {

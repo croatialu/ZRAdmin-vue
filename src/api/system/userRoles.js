@@ -14,7 +14,7 @@ export function createRoleUsers(data) {
   return request({
     url: '/system/userRole/create',
     method: 'post',
-    data
+    data,
   })
 }
 // 删除角色用户
@@ -22,7 +22,7 @@ export function deleteRoleUsers(data) {
   return request({
     url: '/system/userRole/delete',
     method: 'post',
-    data
+    data,
   })
 }
 // 查询角色未添加用户列表

@@ -11,8 +11,8 @@ import directive from './directive' // directive
 // 注册指令
 import plugins from './plugins' // plugins
 // import { download } from '@/utils/request'
-import signalR from '@/utils/signalR'
 import vueI18n from './i18n/index'
+import signalR from '@/utils/signalR'
 import pinia from '@/store/index'
 
 // svg图标
@@ -22,20 +22,20 @@ import elementIcons from '@/components/SvgIcon/svgicon'
 
 import './permission' // permission control
 
-import { getConfigKey } from "@/api/system/config";
-import { getDicts } from "@/api/system/dict/data";
-import { parseTime, resetForm, addDateRange, handleTree, selectDictLabel, download } from '@/utils/ruoyi'
+import { getConfigKey } from '@/api/system/config'
+import { getDicts } from '@/api/system/dict/data'
+import { addDateRange, download, handleTree, parseTime, resetForm, selectDictLabel } from '@/utils/ruoyi'
 
 // 分页组件
 import Pagination from '@/components/Pagination'
 // 自定义表格工具组件
 import RightToolbar from '@/components/RightToolbar'
 // 文件上传组件
-import FileUpload from "@/components/FileUpload"
+import FileUpload from '@/components/FileUpload'
 // 图片上传组件
-import ImageUpload from "@/components/ImageUpload"
+import ImageUpload from '@/components/ImageUpload'
 // 图片预览组件
-import ImagePreview from "@/components/ImagePreview"
+import ImagePreview from '@/components/ImagePreview'
 // 字典标签组件
 import DictTag from '@/components/DictTag'
 // el-date-picker 快捷选项
@@ -63,7 +63,7 @@ app.component('UploadFile', FileUpload)
 app.component('UploadImage', ImageUpload)
 app.component('ImagePreview', ImagePreview)
 app.component('RightToolbar', RightToolbar)
-app.component('svg-icon', SvgIcon)
+app.component('SvgIcon', SvgIcon)
 
 directive(app)
 

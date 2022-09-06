@@ -29,22 +29,24 @@ export default defineComponent({
           },
           [h(resolveComponent(props.name.replace('ele-', '')))],
         )
-    } else if (props.name != undefined && props.name != '') {
+    }
+    else if (props.name != undefined && props.name != '') {
       return () =>
         h(
           'svg',
           {
-            name: props.name,
+            'name': props.name,
             'aria-hidden': true,
-            style: `color: ${props.color}`,
-            class: `svg-icon ${props.className}`,
+            'style': `color: ${props.color}`,
+            'class': `svg-icon ${props.className}`,
           },
           h('use', {
             'xlink:href': `#icon-${props.name}`,
-            fill: `${props.color}`,
+            'fill': `${props.color}`,
           }),
         )
-    } else {
+    }
+    else {
       return () => h('i')
     }
   },

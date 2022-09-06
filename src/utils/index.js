@@ -1,5 +1,5 @@
-import { parseTime } from './ruoyi'
 import { useWebNotification } from '@vueuse/core'
+import { parseTime } from './ruoyi'
 
 /**
  * @param {number} time
@@ -7,11 +7,11 @@ import { useWebNotification } from '@vueuse/core'
  * @returns {string}
  */
 export function formatTime(time, option) {
-  if (('' + time).length === 10) {
+  if ((`${time}`).length === 10)
     time = parseInt(time) * 1000
-  } else {
+  else
     time = +time
-  }
+
   const d = new Date(time)
   const now = Date.now()
 
@@ -19,27 +19,31 @@ export function formatTime(time, option) {
 
   if (diff < 30) {
     return '刚刚'
-  } else if (diff < 3600) {
+  }
+  else if (diff < 3600) {
     // less 1 hour
-    return Math.ceil(diff / 60) + '分钟前'
-  } else if (diff < 3600 * 24) {
-    return Math.ceil(diff / 3600) + '小时前'
-  } else if (diff < 3600 * 24 * 2) {
+    return `${Math.ceil(diff / 60)}分钟前`
+  }
+  else if (diff < 3600 * 24) {
+    return `${Math.ceil(diff / 3600)}小时前`
+  }
+  else if (diff < 3600 * 24 * 2) {
     return '1天前'
   }
   if (option) {
     return parseTime(time, option)
-  } else {
+  }
+  else {
     return (
-      d.getMonth() +
-      1 +
-      '月' +
-      d.getDate() +
-      '日' +
-      d.getHours() +
-      '时' +
-      d.getMinutes() +
-      '分'
+      `${d.getMonth()
+      + 1
+      }月${
+      d.getDate()
+      }日${
+      d.getHours()
+      }时${
+      d.getMinutes()
+      }分`
     )
   }
 }
@@ -71,9 +75,8 @@ export function getQueryObject(url) {
 export function cleanArray(actual) {
   const newArray = []
   for (let i = 0; i < actual.length; i++) {
-    if (actual[i]) {
+    if (actual[i])
       newArray.push(actual[i])
-    }
   }
   return newArray
 }
@@ -83,12 +86,14 @@ export function cleanArray(actual) {
  * @returns {Array}
  */
 export function param(json) {
-  if (!json) return ''
+  if (!json)
+    return ''
   return cleanArray(
-    Object.keys(json).map(key => {
-      if (json[key] === undefined) return ''
-      return encodeURIComponent(key) + '=' + encodeURIComponent(json[key])
-    })
+    Object.keys(json).map((key) => {
+      if (json[key] === undefined)
+        return ''
+      return `${encodeURIComponent(key)}=${encodeURIComponent(json[key])}`
+    }),
   ).join('&')
 }
 
@@ -98,12 +103,12 @@ export function param(json) {
  */
 export function param2Obj(url) {
   const search = decodeURIComponent(url.split('?')[1]).replace(/\+/g, ' ')
-  if (!search) {
+  if (!search)
     return {}
-  }
+
   const obj = {}
   const searchArr = search.split('&')
-  searchArr.forEach(v => {
+  searchArr.forEach((v) => {
     const index = v.indexOf('=')
     if (index !== -1) {
       const name = v.substring(0, index)
@@ -131,19 +136,18 @@ export function html2Text(val) {
  * @returns {Object}
  */
 export function objectMerge(target, source) {
-  if (typeof target !== 'object') {
+  if (typeof target !== 'object')
     target = {}
-  }
-  if (Array.isArray(source)) {
+
+  if (Array.isArray(source))
     return source.slice()
-  }
-  Object.keys(source).forEach(property => {
+
+  Object.keys(source).forEach((property) => {
     const sourceProperty = source[property]
-    if (typeof sourceProperty === 'object') {
+    if (typeof sourceProperty === 'object')
       target[property] = objectMerge(target[property], sourceProperty)
-    } else {
+    else
       target[property] = sourceProperty
-    }
   })
   return target
 }
@@ -153,17 +157,18 @@ export function objectMerge(target, source) {
  * @param {string} className
  */
 export function toggleClass(element, className) {
-  if (!element || !className) {
+  if (!element || !className)
     return
-  }
+
   let classString = element.className
   const nameIndex = classString.indexOf(className)
   if (nameIndex === -1) {
-    classString += '' + className
-  } else {
-    classString =
-      classString.substr(0, nameIndex) +
-      classString.substr(nameIndex + className.length)
+    classString += `${className}`
+  }
+  else {
+    classString
+      = classString.substr(0, nameIndex)
+      + classString.substr(nameIndex + className.length)
   }
   element.className = classString
 }
@@ -173,11 +178,10 @@ export function toggleClass(element, className) {
  * @returns {Date}
  */
 export function getTime(type) {
-  if (type === 'start') {
+  if (type === 'start')
     return new Date().getTime() - 3600 * 1000 * 24 * 90
-  } else {
+  else
     return new Date(new Date().toDateString())
-  }
 }
 
 /**
@@ -196,12 +200,14 @@ export function debounce(func, wait, immediate) {
     // 上次被包装函数被调用时间间隔 last 小于设定时间间隔 wait
     if (last < wait && last > 0) {
       timeout = setTimeout(later, wait - last)
-    } else {
+    }
+    else {
       timeout = null
       // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
       if (!immediate) {
         result = func.apply(context, args)
-        if (!timeout) context = args = null
+        if (!timeout)
+          context = args = null
       }
     }
   }
@@ -211,7 +217,8 @@ export function debounce(func, wait, immediate) {
     timestamp = +new Date()
     const callNow = immediate && !timeout
     // 如果延时不存在，重新设定延时
-    if (!timeout) timeout = setTimeout(later, wait)
+    if (!timeout)
+      timeout = setTimeout(later, wait)
     if (callNow) {
       result = func.apply(context, args)
       context = args = null
@@ -229,16 +236,15 @@ export function debounce(func, wait, immediate) {
  * @returns {Object}
  */
 export function deepClone(source) {
-  if (!source && typeof source !== 'object') {
+  if (!source && typeof source !== 'object')
     throw new Error('error arguments', 'deepClone')
-  }
+
   const targetObj = source.constructor === Array ? [] : {}
-  Object.keys(source).forEach(keys => {
-    if (source[keys] && typeof source[keys] === 'object') {
+  Object.keys(source).forEach((keys) => {
+    if (source[keys] && typeof source[keys] === 'object')
       targetObj[keys] = deepClone(source[keys])
-    } else {
+    else
       targetObj[keys] = source[keys]
-    }
   })
   return targetObj
 }
@@ -255,8 +261,8 @@ export function uniqueArr(arr) {
  * @returns {string}
  */
 export function createUniqueString() {
-  const timestamp = +new Date() + ''
-  const randomNum = parseInt((1 + Math.random()) * 65536) + ''
+  const timestamp = `${+new Date()}`
+  const randomNum = `${parseInt((1 + Math.random()) * 65536)}`
   return (+(randomNum + timestamp)).toString(32)
 }
 
@@ -267,7 +273,7 @@ export function createUniqueString() {
  * @returns {boolean}
  */
 export function hasClass(ele, cls) {
-  return !!ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'))
+  return !!ele.className.match(new RegExp(`(\\s|^)${cls}(\\s|$)`))
 }
 
 /**
@@ -276,7 +282,8 @@ export function hasClass(ele, cls) {
  * @param {string} cls
  */
 export function addClass(ele, cls) {
-  if (!hasClass(ele, cls)) ele.className += ' ' + cls
+  if (!hasClass(ele, cls))
+    ele.className += ` ${cls}`
 }
 
 /**
@@ -286,7 +293,7 @@ export function addClass(ele, cls) {
  */
 export function removeClass(ele, cls) {
   if (hasClass(ele, cls)) {
-    const reg = new RegExp('(\\s|^)' + cls + '(\\s|$)')
+    const reg = new RegExp(`(\\s|^)${cls}(\\s|$)`)
     ele.className = ele.className.replace(reg, ' ')
   }
 }
@@ -294,12 +301,12 @@ export function removeClass(ele, cls) {
 export function makeMap(str, expectsLowerCase) {
   const map = Object.create(null)
   const list = str.split(',')
-  for (let i = 0; i < list.length; i++) {
+  for (let i = 0; i < list.length; i++)
     map[list[i]] = true
-  }
-  return expectsLowerCase ?
-    val => map[val.toLowerCase()] :
-    val => map[val]
+
+  return expectsLowerCase
+    ? val => map[val.toLowerCase()]
+    : val => map[val]
 }
 
 // 首字母大小
@@ -324,11 +331,12 @@ export function isNumberStr(str) {
  * @returns 返回处理后的颜色值
  */
 export function getLightColor(color, level) {
-  let reg = /^\#?[0-9A-Fa-f]{6}$/;
-  if (!reg.test(color)) return color;
-  let rgb = hexToRgb(color);
-  for (let i = 0; i < 3; i++) rgb[i] = Math.floor((255 - rgb[i]) * level + rgb[i]);
-  return rgbToHex(rgb[0], rgb[1], rgb[2]);
+  const reg = /^\#?[0-9A-Fa-f]{6}$/
+  if (!reg.test(color))
+    return color
+  const rgb = hexToRgb(color)
+  for (let i = 0; i < 3; i++) rgb[i] = Math.floor((255 - rgb[i]) * level + rgb[i])
+  return rgbToHex(rgb[0], rgb[1], rgb[2])
 }
 
 /**
@@ -337,13 +345,14 @@ export function getLightColor(color, level) {
  * @returns 返回处理后的颜色值
  */
 export function hexToRgb(str) {
-  let hexs = '';
-  let reg = /^\#?[0-9A-Fa-f]{6}$/;
-  if (!reg.test(str)) return str;
-  str = str.replace('#', '');
-  hexs = str.match(/../g);
-  for (let i = 0; i < 3; i++) hexs[i] = parseInt(hexs[i], 16);
-  return hexs;
+  let hexs = ''
+  const reg = /^\#?[0-9A-Fa-f]{6}$/
+  if (!reg.test(str))
+    return str
+  str = str.replace('#', '')
+  hexs = str.match(/../g)
+  for (let i = 0; i < 3; i++) hexs[i] = parseInt(hexs[i], 16)
+  return hexs
 }
 
 /**
@@ -354,12 +363,15 @@ export function hexToRgb(str) {
  * @returns 返回处理后的颜色值
  */
 export function rgbToHex(r, g, b) {
-  let reg = /^\d{1,3}$/;
-  if (!reg.test(r) || !reg.test(g) || !reg.test(b)) return "";
-  let hexs = [r.toString(16), g.toString(16), b.toString(16)];
-  for (let i = 0; i < 3; i++)
-    if (hexs[i].length == 1) hexs[i] = `0${hexs[i]}`;
-  return `#${hexs.join('')}`;
+  const reg = /^\d{1,3}$/
+  if (!reg.test(r) || !reg.test(g) || !reg.test(b))
+    return ''
+  const hexs = [r.toString(16), g.toString(16), b.toString(16)]
+  for (let i = 0; i < 3; i++) {
+    if (hexs[i].length == 1)
+      hexs[i] = `0${hexs[i]}`
+  }
+  return `#${hexs.join('')}`
 }
 
 /**
@@ -373,9 +385,8 @@ export function webNotify(optinos) {
     lang: 'en',
     renotify: true,
     tag: 'tag',
-    body: optinos.body
+    body: optinos.body,
   })
-  if (isSupported) {
+  if (isSupported)
     show()
-  }
 }

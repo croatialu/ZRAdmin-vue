@@ -1,37 +1,3 @@
-<template>
-  <div>
-    <el-popover placement="bottom" trigger="hover" width="300px" popper-class="el-popover-pupop-user-news">
-      <template #reference>
-        <el-badge :is-dot="noticeDot" style="line-height: 18px">
-          <el-icon><bell /></el-icon>
-        </el-badge>
-      </template>
-      <div class="layout-navbars-breadcrumb-user-news">
-        <div class="head-box">
-          <div class="head-box-title">通知</div>
-          <div class="head-box-btn" v-if="noticeList.length > 0" @click="onAllReadClick">全部已读</div>
-        </div>
-        <div class="content-box">
-          <template v-if="noticeList.length > 0">
-            <div class="content-box-item" v-for="(v, k) in noticeList" :key="k">
-              <div>{{ v.noticeTitle }}</div>
-              <div class="content-box-msg" v-html="v.noticeContent"></div>
-              <div class="content-box-time">{{ v.updateTime }}</div>
-            </div>
-          </template>
-          <div class="content-box-empty" v-else>
-            <div class="content-box-empty-margin">
-              <el-icon><Promotion /></el-icon>
-              <div class="mt15">全部已读</div>
-            </div>
-          </div>
-        </div>
-        <div class="foot-box" @click="onGoToGiteeClick" v-if="noticeList.length > 0">前往通知中心</div>
-      </div>
-    </el-popover>
-  </div>
-</template>
-
 <script setup name="noticeIndex">
 import useSocketStore from '@/store/modules/socket'
 
@@ -56,6 +22,50 @@ function onGoToGiteeClick() {
   window.open('https://gitee.com/izory/ZrAdminNetCore')
 }
 </script>
+
+<template>
+  <div>
+    <el-popover placement="bottom" trigger="hover" width="300px" popper-class="el-popover-pupop-user-news">
+      <template #reference>
+        <el-badge :is-dot="noticeDot" style="line-height: 18px">
+          <el-icon><bell /></el-icon>
+        </el-badge>
+      </template>
+      <div class="layout-navbars-breadcrumb-user-news">
+        <div class="head-box">
+          <div class="head-box-title">
+            通知
+          </div>
+          <div v-if="noticeList.length > 0" class="head-box-btn" @click="onAllReadClick">
+            全部已读
+          </div>
+        </div>
+        <div class="content-box">
+          <template v-if="noticeList.length > 0">
+            <div v-for="(v, k) in noticeList" :key="k" class="content-box-item">
+              <div>{{ v.noticeTitle }}</div>
+              <div class="content-box-msg" v-html="v.noticeContent" />
+              <div class="content-box-time">
+                {{ v.updateTime }}
+              </div>
+            </div>
+          </template>
+          <div v-else class="content-box-empty">
+            <div class="content-box-empty-margin">
+              <el-icon><Promotion /></el-icon>
+              <div class="mt15">
+                全部已读
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="noticeList.length > 0" class="foot-box" @click="onGoToGiteeClick">
+          前往通知中心
+        </div>
+      </div>
+    </el-popover>
+  </div>
+</template>
 
 <style lang="scss">
 .head-box {

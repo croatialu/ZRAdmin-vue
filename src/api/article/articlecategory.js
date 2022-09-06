@@ -32,7 +32,7 @@ export function addArticleCategory(data) {
   return request({
     url: 'article/ArticleCategory',
     method: 'post',
-    data: data,
+    data,
   })
 }
 
@@ -44,7 +44,7 @@ export function updateArticleCategory(data) {
   return request({
     url: 'article/ArticleCategory',
     method: 'PUT',
-    data: data,
+    data,
   })
 }
 
@@ -54,8 +54,8 @@ export function updateArticleCategory(data) {
  */
 export function getArticleCategory(id) {
   return request({
-    url: 'article/ArticleCategory/' + id,
-    method: 'get'
+    url: `article/ArticleCategory/${id}`,
+    method: 'get',
   })
 }
 
@@ -65,8 +65,8 @@ export function getArticleCategory(id) {
  */
 export function delArticleCategory(pid) {
   return request({
-    url: 'article/ArticleCategory/' + pid,
-    method: 'delete'
+    url: `article/ArticleCategory/${pid}`,
+    method: 'delete',
   })
 }
 
@@ -75,6 +75,6 @@ export function exportArticleCategory(query) {
   return request({
     url: 'article/ArticleCategory/export',
     method: 'get',
-    params: query
+    params: query,
   })
 }

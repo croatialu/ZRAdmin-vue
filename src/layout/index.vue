@@ -1,33 +1,3 @@
-<template>
-  <el-container :class="classObj" class="app-layout" :style="{ '--current-color': theme }">
-    <!-- 移动端打开菜单遮罩 -->
-    <el-drawer v-if="device === 'mobile'" v-model="menuDrawer" :with-header="false" modal-class="sidebar-mobile" direction="ltr">
-      <sidebar />
-    </el-drawer>
-    <sidebar v-else-if="!sidebar.hide" />
-
-    <el-container class="main-container flex-center" :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }">
-      <el-header :class="{ 'fixed-header': fixedHeader }">
-        <navbar @setLayout="setLayout" />
-        <tags-view v-if="needTagsView" />
-      </el-header>
-      <el-main class="app-main">
-        <router-view v-slot="{ Component, route }">
-          <transition name="fade-transform" mode="out-in">
-            <keep-alive :include="cachedViews">
-              <component :is="Component" :key="route.path" />
-            </keep-alive>
-          </transition>
-        </router-view>
-      </el-main>
-      <el-footer v-if="showFooter">
-        <div v-html="defaultSettings.copyright"></div>
-      </el-footer>
-      <settings ref="settingRef" />
-    </el-container>
-  </el-container>
-</template>
-
 <script setup>
 import { useWindowSize } from '@vueuse/core'
 import Sidebar from './components/Sidebar/index.vue'
@@ -41,7 +11,7 @@ const menuDrawer = computed({
   get: () => useAppStore().sidebar.opened,
   set: (val) => {
     useAppStore().toggleSideBar(val)
-  }
+  },
 })
 const settingsStore = useSettingsStore()
 const theme = computed(() => settingsStore.theme)
@@ -57,12 +27,12 @@ useTagsViewStore().addCachedView(route)
 const cachedViews = computed(() => {
   return useTagsViewStore().cachedViews
 })
-//appMain 模块结束
+// appMain 模块结束
 
 const classObj = computed(() => ({
   hideSidebar: !sidebar.value.opened,
   openSidebar: sidebar.value.opened,
-  mobile: device.value === 'mobile'
+  mobile: device.value === 'mobile',
 }))
 
 const { width, height } = useWindowSize()
@@ -72,12 +42,11 @@ watchEffect(() => {
   if (device.value === 'mobile' && sidebar.value.opened) {
     // useAppStore().closeSideBar()
   }
-  if (width.value - 1 < WIDTH) {
+  if (width.value - 1 < WIDTH)
     useAppStore().toggleDevice('mobile')
     // useAppStore().closeSideBar()
-  } else {
+  else
     useAppStore().toggleDevice('desktop')
-  }
 })
 
 const settingRef = ref(null)
@@ -85,6 +54,36 @@ function setLayout() {
   settingRef.value.openSetting()
 }
 </script>
+
+<template>
+  <el-container :class="classObj" class="app-layout" :style="{ '--current-color': theme }">
+    <!-- 移动端打开菜单遮罩 -->
+    <el-drawer v-if="device === 'mobile'" v-model="menuDrawer" :with-header="false" modal-class="sidebar-mobile" direction="ltr">
+      <Sidebar />
+    </el-drawer>
+    <Sidebar v-else-if="!sidebar.hide" />
+
+    <el-container class="main-container flex-center" :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }">
+      <el-header :class="{ 'fixed-header': fixedHeader }">
+        <Navbar @setLayout="setLayout" />
+        <TagsView v-if="needTagsView" />
+      </el-header>
+      <el-main class="app-main">
+        <router-view v-slot="{ Component, route }">
+          <transition name="fade-transform" mode="out-in">
+            <keep-alive :include="cachedViews">
+              <component :is="Component" :key="route.path" />
+            </keep-alive>
+          </transition>
+        </router-view>
+      </el-main>
+      <el-footer v-if="showFooter">
+        <div v-html="defaultSettings.copyright" />
+      </el-footer>
+      <Settings ref="settingRef" />
+    </el-container>
+  </el-container>
+</template>
 
 <style lang="scss">
 @import '@/assets/styles/mixin.scss';

@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Layout from '@/layout'
 
 /**
@@ -28,47 +28,47 @@ export const constantRoutes = [
     component: Layout,
     hidden: true,
     children: [
-    {
-      path: '/redirect/:path(.*)',
-      component: () => import('@/views/redirect/index.vue')
-    }]
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index.vue'),
+      }],
   },
   {
     path: '/login',
     component: () => import('@/views/login'),
-    hidden: true
+    hidden: true,
   },
   {
     path: '/sociallogin',
     component: () => import('@/views/socialLogin'),
-    hidden: true
+    hidden: true,
   },
   {
     path: '/register',
     component: () => import('@/views/register'),
-    hidden: true
+    hidden: true,
   },
   {
-    path: "/:pathMatch(.*)*",
+    path: '/:pathMatch(.*)*',
     component: () => import('@/views/error/404'),
-    hidden: true
+    hidden: true,
   },
   {
     path: '/401',
     component: () => import('@/views/error/401'),
-    hidden: true
+    hidden: true,
   },
   {
     path: '',
     component: Layout,
     redirect: '/index',
     children: [
-    {
-      path: '/index',
-      component: () => import('@/views/index'),
-      name: 'Index',
-      meta: { title: '首页', icon: 'dashboard', affix: true, titleKey: 'menu.home' }
-    }]
+      {
+        path: '/index',
+        component: () => import('@/views/index'),
+        name: 'Index',
+        meta: { title: '首页', icon: 'dashboard', affix: true, titleKey: 'menu.home' },
+      }],
   },
   {
     path: '/user',
@@ -76,12 +76,12 @@ export const constantRoutes = [
     hidden: true,
     redirect: 'noredirect',
     children: [
-    {
-      path: 'profile',
-      component: () => import('@/views/system/user/profile/index'),
-      name: 'Profile',
-      meta: { title: '个人中心', icon: 'user', titleKey: 'menu.personalCenter' }
-    }]
+      {
+        path: 'profile',
+        component: () => import('@/views/system/user/profile/index'),
+        name: 'Profile',
+        meta: { title: '个人中心', icon: 'user', titleKey: 'menu.personalCenter' },
+      }],
   },
   // 不用可删掉
   {
@@ -90,26 +90,25 @@ export const constantRoutes = [
     hidden: false,
     meta: { title: '组件示例', icon: 'icon', noCache: 'fasle' },
     children: [
-    {
-      path: 'icon',
-      component: () => import('@/views/components/icons/index'),
-      name: 'icon',
-      meta: { title: '图标icon', icon: 'icon1', noCache: 'fasle', titleKey: 'menu.icon' }
-    }]
+      {
+        path: 'icon',
+        component: () => import('@/views/components/icons/index'),
+        name: 'icon',
+        meta: { title: '图标icon', icon: 'icon1', noCache: 'fasle', titleKey: 'menu.icon' },
+      }],
   },
-];
+]
 
 const router = createRouter({
   history: createWebHistory(
     import.meta.env.VITE_APP_ROUTER_PREFIX),
   routes: constantRoutes,
   scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) {
+    if (savedPosition)
       return savedPosition
-    } else {
+    else
       return { top: 0 }
-    }
   },
-});
+})
 
-export default router;
+export default router

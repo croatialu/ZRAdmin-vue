@@ -1,9 +1,3 @@
-<template>
-  <div class="stars">
-    <div class="star" v-for="(item, index) in starsCount" :key="index" ref="star"></div>
-  </div>
-</template>
-
 <script setup name="starBackground">
 import { getCurrentInstance, onMounted } from 'vue'
 
@@ -14,15 +8,21 @@ onMounted(() => {
   initStars()
 })
 function initStars() {
-  let starArr = proxy.$refs.star
+  const starArr = proxy.$refs.star
   starArr.forEach((item) => {
-    let speed = 0.2 + Math.random() * 1
-    let thisDistance = distance.value + Math.random() * 300
+    const speed = 0.2 + Math.random() * 1
+    const thisDistance = distance.value + Math.random() * 300
     item.style.transformOrigin = `0 0 ${thisDistance}px`
     item.style.transform = `translate3d(0, 0, -${thisDistance}px) rotateY(${Math.random() * 360}deg) rotateX(${Math.random() * -50}deg) scale(${speed}, ${speed})`
   })
 }
 </script>
+
+<template>
+  <div class="stars">
+    <div v-for="(item, index) in starsCount" :key="index" ref="star" class="star" />
+  </div>
+</template>
 
 <style scoped lang="scss">
 @keyframes rotate {

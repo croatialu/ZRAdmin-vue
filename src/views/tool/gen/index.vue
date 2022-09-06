@@ -1,78 +1,5 @@
-<template>
-  <div class="app-container">
-    <el-form ref="codeform" :inline="true" :model="queryParams">
-      <el-form-item label="表名" prop="tableName">
-        <el-input v-model="queryParams.tableName" clearable placeholder="输入要查询的表名" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="search" @click="getList()">查询</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb10">
-      <el-col :span="1.5">
-        <el-button type="info" plain icon="upload" @click="openImportTable" v-hasPermi="['tool:gen:import']">导入</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger" :disabled="multiple" plain icon="delete" @click="handleDelete" v-hasPermi="['tool:gen:remove']"> 删除</el-button>
-      </el-col>
-    </el-row>
-    <el-table
-      ref="gridtable"
-      v-loading="tableloading"
-      :data="tableList"
-      border
-      @selection-change="handleSelectionChange"
-      highlight-current-row
-      height="480px">
-      <el-table-column type="selection" align="center" width="55"></el-table-column>
-      <el-table-column label="#" type="index" width="50" align="center">
-        <template #default="scope">
-          <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="dbName" label="数据库名" width="90" :show-overflow-tooltip="true" />
-      <el-table-column prop="tableId" label="id" width="70" sortable="" />
-      <el-table-column prop="tableName" label="表名" width="110" :show-overflow-tooltip="true" />
-      <el-table-column prop="tableComment" label="表描述" :show-overflow-tooltip="true" width="120" />
-      <el-table-column prop="className" label="实体" :show-overflow-tooltip="true" />
-      <el-table-column prop="createTime" label="创建时间" sortable />
-      <el-table-column prop="updateTime" label="更新时间" sortable />
-      <el-table-column label="操作" align="center" width="320">
-        <template #default="scope">
-          <el-link type="primary" icon="view" :underline="false" @click="handlePreview(scope.row)" v-hasPermi="['tool:gen:preview']">预览</el-link>
-          <el-link type="primary" icon="edit" :underline="false" class="ml10" @click="handleEditTable(scope.row)" v-hasPermi="['tool:gen:edit']">
-            编辑
-          </el-link>
-          <el-link type="primary" icon="delete" :underline="false" class="ml10" @click="handleDelete(scope.row)" v-hasPermi="['tool:gen:remove']">
-            删除
-          </el-link>
-          <el-link type="primary" icon="refresh" :underline="false" class="ml10" @click="handleSynchDb(scope.row)" v-hasPermi="['tool:gen:edit']">
-            同步
-          </el-link>
-          <el-link type="primary" icon="download" :underline="false" class="ml10" @click="handleGenTable(scope.row)" v-hasPermi="['tool:gen:code']">
-            生成代码
-          </el-link>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" v-model:total="total" @pagination="getList" />
-
-    <!-- 预览界面 -->
-    <el-dialog :title="preview.title" v-model="preview.open" width="80%" top="5vh" append-to-body>
-      <el-tabs v-model="preview.activeName">
-        <el-tab-pane v-for="(item, key) in preview.data" :label="item.title" :id="key" :name="key.toString()" :key="key">
-          <el-link :underline="false" icon="DocumentCopy" @click="onCopy(item.content)" class="btn-copy">复制 </el-link>
-          <pre><code class="hljs" v-html="highlightedCode(item.content, item.title)"></code></pre>
-        </el-tab-pane>
-      </el-tabs>
-    </el-dialog>
-    <import-table ref="importRef" @ok="getList" />
-  </div>
-</template>
-
 <script setup name="gen">
-import { codeGenerator, listTable, delTable, previewTable, synchDb } from '@/api/tool/gen'
+import { codeGenerator, delTable, listTable, previewTable, synchDb } from '@/api/tool/gen'
 import { useRouter } from 'vue-router'
 import importTable from './importTable'
 import hljs from 'highlight.js'
@@ -130,7 +57,7 @@ function handleGenTable(row) {
     proxy.$modal.msgError('请先选择要生成代码的数据表')
     return false
   }
-  proxy.$refs['codeform'].validate((valid) => {
+  proxy.$refs.codeform.validate((valid) => {
     if (valid) {
       proxy.$modal.loading('正在生成代码...')
 
@@ -144,7 +71,8 @@ function handleGenTable(row) {
           showGenerate.value = false
           if (row.genType === '1') {
             proxy.$modal.msgSuccess('成功生成到自定义路径')
-          } else {
+          }
+          else {
             proxy.$modal.msgSuccess('恭喜你，代码生成完成！')
             proxy.download(data.path)
           }
@@ -153,7 +81,8 @@ function handleGenTable(row) {
         .catch((erre) => {
           proxy.$modal.closeLoading()
         })
-    } else {
+    }
+    else {
       return false
     }
   })
@@ -162,8 +91,8 @@ function handleGenTable(row) {
 function handleSynchDb(row) {
   const tableName = row.tableName
   proxy
-    .$confirm('确认要强制同步"' + tableName + '"表结构吗？')
-    .then(function () {
+    .$confirm(`确认要强制同步"${tableName}"表结构吗？`)
+    .then(() => {
       return synchDb(row.tableId, { tableName, dbName: row.dbName })
     })
     .then(() => {
@@ -173,11 +102,11 @@ function handleSynchDb(row) {
 }
 /** 打开导入表弹窗 */
 function openImportTable() {
-  proxy.$refs['importRef'].show()
+  proxy.$refs.importRef.show()
 }
 /** 预览按钮 */
 function handlePreview(row) {
-  proxy.$refs['codeform'].validate((valid) => {
+  proxy.$refs.codeform.validate((valid) => {
     if (!valid) {
       proxy.$modal.msgError('请先完成表格内容')
       return
@@ -195,7 +124,7 @@ function handlePreview(row) {
 }
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  tableIds.value = selection.map((item) => item.tableId)
+  tableIds.value = selection.map(item => item.tableId)
   multiple.value = !selection.length
 }
 /** 编辑表格 */
@@ -245,12 +174,98 @@ function onCopy(input) {
   if (isSupported) {
     copy(input)
     proxy.$modal.msgSuccess('复制成功！')
-  } else {
+  }
+  else {
     proxy.$modal.msgError('当前浏览器不支持')
   }
 }
 getList()
 </script>
+
+<template>
+  <div class="app-container">
+    <el-form ref="codeform" :inline="true" :model="queryParams">
+      <el-form-item label="表名" prop="tableName">
+        <el-input v-model="queryParams.tableName" clearable placeholder="输入要查询的表名" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="search" @click="getList()">
+          查询
+        </el-button>
+      </el-form-item>
+    </el-form>
+
+    <el-row :gutter="10" class="mb10">
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['tool:gen:import']" type="info" plain icon="upload" @click="openImportTable">
+          导入
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['tool:gen:remove']" type="danger" :disabled="multiple" plain icon="delete" @click="handleDelete">
+          删除
+        </el-button>
+      </el-col>
+    </el-row>
+    <el-table
+      ref="gridtable"
+      v-loading="tableloading"
+      :data="tableList"
+      border
+      highlight-current-row
+      height="480px"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" align="center" width="55" />
+      <el-table-column label="#" type="index" width="50" align="center">
+        <template #default="scope">
+          <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="dbName" label="数据库名" width="90" :show-overflow-tooltip="true" />
+      <el-table-column prop="tableId" label="id" width="70" sortable="" />
+      <el-table-column prop="tableName" label="表名" width="110" :show-overflow-tooltip="true" />
+      <el-table-column prop="tableComment" label="表描述" :show-overflow-tooltip="true" width="120" />
+      <el-table-column prop="className" label="实体" :show-overflow-tooltip="true" />
+      <el-table-column prop="createTime" label="创建时间" sortable />
+      <el-table-column prop="updateTime" label="更新时间" sortable />
+      <el-table-column label="操作" align="center" width="320">
+        <template #default="scope">
+          <el-link v-hasPermi="['tool:gen:preview']" type="primary" icon="view" :underline="false" @click="handlePreview(scope.row)">
+            预览
+          </el-link>
+          <el-link v-hasPermi="['tool:gen:edit']" type="primary" icon="edit" :underline="false" class="ml10" @click="handleEditTable(scope.row)">
+            编辑
+          </el-link>
+          <el-link v-hasPermi="['tool:gen:remove']" type="primary" icon="delete" :underline="false" class="ml10" @click="handleDelete(scope.row)">
+            删除
+          </el-link>
+          <el-link v-hasPermi="['tool:gen:edit']" type="primary" icon="refresh" :underline="false" class="ml10" @click="handleSynchDb(scope.row)">
+            同步
+          </el-link>
+          <el-link v-hasPermi="['tool:gen:code']" type="primary" icon="download" :underline="false" class="ml10" @click="handleGenTable(scope.row)">
+            生成代码
+          </el-link>
+        </template>
+      </el-table-column>
+    </el-table>
+    <pagination v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" v-model:total="total" @pagination="getList" />
+
+    <!-- 预览界面 -->
+    <el-dialog v-model="preview.open" :title="preview.title" width="80%" top="5vh" append-to-body>
+      <el-tabs v-model="preview.activeName">
+        <el-tab-pane v-for="(item, key) in preview.data" :id="key" :key="key" :label="item.title" :name="key.toString()">
+          <el-link :underline="false" icon="DocumentCopy" class="btn-copy" @click="onCopy(item.content)">
+            复制
+          </el-link>
+          <pre><code class="hljs" v-html="highlightedCode(item.content, item.title)" /></pre>
+        </el-tab-pane>
+      </el-tabs>
+    </el-dialog>
+    <import-table ref="importRef" @ok="getList" />
+  </div>
+</template>
+
 <style>
 .btn-copy {
   position: absolute;

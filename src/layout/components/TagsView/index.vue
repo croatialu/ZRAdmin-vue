@@ -1,39 +1,3 @@
-<template>
-  <div id="tags-view-container" class="tags-view-container">
-    <scroll-pane ref="scrollPaneRef" class="tags-view-wrapper" @scroll="handleScroll">
-      <router-link
-        v-for="tag in visitedViews"
-        :key="tag.path"
-        :data-path="tag.path"
-        :class="{ active: isActive(tag) }"
-        :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
-        class="tags-view-item"
-        :style="activeStyle(tag)"
-        @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
-        @contextmenu.prevent="openMenu(tag, $event)">
-        <span v-if="tag.meta && tag.meta.titleKey">{{ $t(tag.meta.titleKey) }}</span>
-        <span v-else>{{ tag.title }}</span>
-        <span v-if="!isAffix(tag)" @click.prevent.stop="closeSelectedTag(tag)" style="width: 10px; height: 10px; display: inline-block">
-          <close class="el-icon-close close" style="width: 1em; height: 1em; vertical-align: middle" />
-        </span>
-      </router-link>
-    </scroll-pane>
-    <ul v-show="visible" :style="{ left: left + 'px', top: top + 'px' }" class="contextmenu">
-      <li @click="refreshSelectedTag(selectedTag)" v-if="isActive(selectedTag)">
-        <refresh-right style="width: 1em; height: 1em" />
-        {{ $t('tagsView.refresh') }}
-      </li>
-      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">
-        <close style="width: 1em; height: 1em" /> {{ $t('tagsView.close') }}
-      </li>
-      <li @click="closeOthersTags"><circle-close style="width: 1em; height: 1em" /> {{ $t('tagsView.closeOther') }}</li>
-      <li v-if="!isFirstView()" @click="closeLeftTags"><back style="width: 1em; height: 1em" /> {{ $t('tagsView.closeLeft') }}</li>
-      <li v-if="!isLastView()" @click="closeRightTags"><right style="width: 1em; height: 1em" /> {{ $t('tagsView.closeRight') }}</li>
-      <li @click="closeAllTags(selectedTag)"><circle-close style="width: 1em; height: 1em" /> {{ $t('tagsView.closeAll') }}</li>
-    </ul>
-  </div>
-</template>
-
 <script setup>
 import ScrollPane from './ScrollPane'
 import { getNormalPath } from '@/utils/ruoyi'
@@ -61,11 +25,10 @@ watch(route, () => {
   moveToCurrentTag()
 })
 watch(visible, (value) => {
-  if (value) {
+  if (value)
     document.body.addEventListener('click', closeMenu)
-  } else {
+  else
     document.body.removeEventListener('click', closeMenu)
-  }
 })
 onMounted(() => {
   initTags()
@@ -76,7 +39,8 @@ function isActive(r) {
   return r.path === route.path
 }
 function activeStyle(tag) {
-  if (!isActive(tag)) return {}
+  if (!isActive(tag))
+    return {}
   // return {
   //   'background-color': theme.value,
   //   'border-color': theme.value,
@@ -88,14 +52,16 @@ function isAffix(tag) {
 function isFirstView() {
   try {
     return selectedTag.value.fullPath === visitedViews.value[1].fullPath || selectedTag.value.fullPath === '/index'
-  } catch (err) {
+  }
+  catch (err) {
     return false
   }
 }
 function isLastView() {
   try {
     return selectedTag.value.fullPath === visitedViews.value[visitedViews.value.length - 1].fullPath
-  } catch (err) {
+  }
+  catch (err) {
     return false
   }
 }
@@ -103,7 +69,7 @@ function filterAffixTags(routes, basePath = '') {
   let tags = []
   routes.forEach((route) => {
     if (route.meta && route.meta.affix) {
-      const tagPath = getNormalPath(basePath + '/' + route.path)
+      const tagPath = getNormalPath(`${basePath}/${route.path}`)
       tags.push({
         fullPath: tagPath,
         path: tagPath,
@@ -113,9 +79,8 @@ function filterAffixTags(routes, basePath = '') {
     }
     if (route.children) {
       const tempTags = filterAffixTags(route.children, route.path)
-      if (tempTags.length >= 1) {
+      if (tempTags.length >= 1)
         tags = [...tags, ...tempTags]
-      }
     }
   })
   return tags
@@ -125,16 +90,15 @@ function initTags() {
   affixTags.value = res
   for (const tag of res) {
     // Must have tag name
-    if (tag.name) {
+    if (tag.name)
       useTagsViewStore().addVisitedView(tag)
-    }
   }
 }
 function addTags() {
   const { name } = route
-  if (name) {
+  if (name)
     useTagsViewStore().addView(route)
-  }
+
   return false
 }
 function moveToCurrentTag() {
@@ -143,9 +107,8 @@ function moveToCurrentTag() {
       if (r.path === route.path) {
         scrollPaneRef.value.moveToTarget(r)
         // when query is different then update
-        if (r.fullPath !== route.fullPath) {
+        if (r.fullPath !== route.fullPath)
           useTagsViewStore().updateVisitedView(route)
-        }
       }
     }
   })
@@ -156,23 +119,20 @@ function refreshSelectedTag(view) {
 }
 function closeSelectedTag(view) {
   proxy.$tab.closePage(view).then(({ visitedViews }) => {
-    if (isActive(view)) {
+    if (isActive(view))
       toLastView(visitedViews, view)
-    }
   })
 }
 function closeRightTags() {
   proxy.$tab.closeRightPage(selectedTag.value).then((visitedViews) => {
-    if (!visitedViews.find((i) => i.fullPath === route.fullPath)) {
+    if (!visitedViews.find(i => i.fullPath === route.fullPath))
       toLastView(visitedViews)
-    }
   })
 }
 function closeLeftTags() {
   proxy.$tab.closeLeftPage(selectedTag.value).then((visitedViews) => {
-    if (!visitedViews.find((i) => i.fullPath === route.fullPath)) {
+    if (!visitedViews.find(i => i.fullPath === route.fullPath))
       toLastView(visitedViews)
-    }
   })
 }
 function closeOthersTags() {
@@ -183,9 +143,9 @@ function closeOthersTags() {
 }
 function closeAllTags(view) {
   proxy.$tab.closeAllPage().then(({ visitedViews }) => {
-    if (affixTags.value.some((tag) => tag.path === route.path)) {
+    if (affixTags.value.some(tag => tag.path === route.path))
       return
-    }
+
     toLastView(visitedViews, view)
   })
 }
@@ -193,13 +153,15 @@ function toLastView(visitedViews, view) {
   const latestView = visitedViews.slice(-1)[0]
   if (latestView) {
     router.push(latestView.fullPath)
-  } else {
+  }
+  else {
     // now the default is to redirect to the home page if there is no tags-view,
     // you can adjust it according to your needs.
     if (view.name === 'Dashboard') {
       // to reload home page
-      router.replace({ path: '/redirect' + view.fullPath })
-    } else {
+      router.replace({ path: `/redirect${view.fullPath}` })
+    }
+    else {
       router.push('/')
     }
   }
@@ -211,11 +173,10 @@ function openMenu(tag, e) {
   const maxLeft = offsetWidth - menuMinWidth // left boundary
   const l = e.clientX - offsetLeft + 15 // 15: margin right
 
-  if (l > maxLeft) {
+  if (l > maxLeft)
     left.value = maxLeft
-  } else {
+  else
     left.value = l
-  }
 
   top.value = e.clientY
   visible.value = true
@@ -228,6 +189,51 @@ function handleScroll() {
   closeMenu()
 }
 </script>
+
+<template>
+  <div id="tags-view-container" class="tags-view-container">
+    <ScrollPane ref="scrollPaneRef" class="tags-view-wrapper" @scroll="handleScroll">
+      <router-link
+        v-for="tag in visitedViews"
+        :key="tag.path"
+        :data-path="tag.path"
+        :class="{ active: isActive(tag) }"
+        :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
+        class="tags-view-item"
+        :style="activeStyle(tag)"
+        @click.middle="!isAffix(tag) ? closeSelectedTag(tag) : ''"
+        @contextmenu.prevent="openMenu(tag, $event)"
+      >
+        <span v-if="tag.meta && tag.meta.titleKey">{{ $t(tag.meta.titleKey) }}</span>
+        <span v-else>{{ tag.title }}</span>
+        <span v-if="!isAffix(tag)" style="width: 10px; height: 10px; display: inline-block" @click.prevent.stop="closeSelectedTag(tag)">
+          <close class="el-icon-close close" style="width: 1em; height: 1em; vertical-align: middle" />
+        </span>
+      </router-link>
+    </ScrollPane>
+    <ul v-show="visible" :style="{ left: `${left}px`, top: `${top}px` }" class="contextmenu">
+      <li v-if="isActive(selectedTag)" @click="refreshSelectedTag(selectedTag)">
+        <refresh-right style="width: 1em; height: 1em" />
+        {{ $t('tagsView.refresh') }}
+      </li>
+      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">
+        <close style="width: 1em; height: 1em" /> {{ $t('tagsView.close') }}
+      </li>
+      <li @click="closeOthersTags">
+        <circle-close style="width: 1em; height: 1em" /> {{ $t('tagsView.closeOther') }}
+      </li>
+      <li v-if="!isFirstView()" @click="closeLeftTags">
+        <back style="width: 1em; height: 1em" /> {{ $t('tagsView.closeLeft') }}
+      </li>
+      <li v-if="!isLastView()" @click="closeRightTags">
+        <right style="width: 1em; height: 1em" /> {{ $t('tagsView.closeRight') }}
+      </li>
+      <li @click="closeAllTags(selectedTag)">
+        <circle-close style="width: 1em; height: 1em" /> {{ $t('tagsView.closeAll') }}
+      </li>
+    </ul>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .tags-view-container {

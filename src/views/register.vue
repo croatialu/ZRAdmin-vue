@@ -1,66 +1,8 @@
-<template>
-  <starBackground></starBackground>
-  <div class="register">
-    <el-form ref="registerFormRef" :model="registerForm" :rules="registerRules" class="register-form">
-      <h3 class="title">{{ title }}</h3>
-      <el-form-item prop="username">
-        <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号">
-          <template #prefix>
-            <svg-icon name="user" />
-          </template>
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="password">
-        <el-input v-model="registerForm.password" type="password" auto-complete="off" placeholder="密码" @keyup.enter.native="handleRegister">
-          <template #prefix>
-            <svg-icon name="password" />
-          </template>
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="confirmPassword">
-        <el-input
-          v-model="registerForm.confirmPassword"
-          type="password"
-          auto-complete="off"
-          placeholder="确认密码"
-          @keyup.enter.native="handleRegister">
-          <template #prefix>
-            <svg-icon name="password" />
-          </template>
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="code" v-if="captchaOnOff">
-        <el-input v-model="registerForm.code" auto-complete="off" placeholder="验证码" style="width: 63%" @keyup.enter.native="handleRegister">
-          <template #prefix>
-            <svg-icon name="validCode" />
-          </template>
-        </el-input>
-        <div class="register-code ml10">
-          <img :src="codeUrl" @click="getCode" class="register-code-img" />
-        </div>
-      </el-form-item>
-      <el-form-item style="width: 100%">
-        <el-button :loading="loading" type="primary" size="large" style="width: 100%" @click.native.prevent="handleRegister">
-          <span v-if="!loading">注 册</span>
-          <span v-else>注 册 中...</span>
-        </el-button>
-        <div style="float: right">
-          <router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
-        </div>
-      </el-form-item>
-    </el-form>
-    <!--  底部  -->
-    <div class="el-register-footer">
-      <div v-html="defaultSettings.copyright"></div>
-    </div>
-  </div>
-</template>
-
 <script setup name="register">
+import { ElMessageBox } from 'element-plus'
 import starBackground from '@/views/components/starBackground.vue'
 import { getCodeImg, register } from '@/api/system/login'
 import defaultSettings from '@/settings'
-import { ElMessageBox } from 'element-plus'
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 const codeUrl = ref('')
@@ -76,11 +18,10 @@ const registerFormRef = ref(null)
 const loading = ref(false)
 const captchaOnOff = ref(true)
 const equalToPassword = (rule, value, callback) => {
-  if (registerForm.password !== value) {
+  if (registerForm.password !== value)
     callback(new Error('两次输入的密码不一致'))
-  } else {
+  else
     callback()
-  }
 }
 const registerRules = reactive({
   username: [
@@ -116,20 +57,20 @@ const title = computed(() => {
 
 function getCode() {
   getCodeImg().then((res) => {
-    codeUrl.value = 'data:image/gif;base64,' + res.data.img
+    codeUrl.value = `data:image/gif;base64,${res.data.img}`
     registerForm.uuid = res.data.uuid
     // this.$forceUpdate()
   })
 }
 function handleRegister() {
-  proxy.$refs['registerFormRef'].validate((valid) => {
+  proxy.$refs.registerFormRef.validate((valid) => {
     if (valid) {
       loading.value = true
       register(registerForm)
         .then((res) => {
           if (res.code == 200) {
             const username = registerForm.username
-            ElMessageBox.alert("<font color='red'>恭喜你，您的账号 " + username + ' 注册成功！</font>', '系统提示', {
+            ElMessageBox.alert(`<font color='red'>恭喜你，您的账号 ${username} 注册成功！</font>`, '系统提示', {
               dangerouslyUseHTMLString: true,
               type: 'success',
             })
@@ -141,15 +82,77 @@ function handleRegister() {
         })
         .catch(() => {
           loading.value = false
-          if (captchaOnOff.value) {
+          if (captchaOnOff.value)
             getCode()
-          }
         })
     }
   })
 }
 getCode()
 </script>
+
+<template>
+  <starBackground />
+  <div class="register">
+    <el-form ref="registerFormRef" :model="registerForm" :rules="registerRules" class="register-form">
+      <h3 class="title">
+        {{ title }}
+      </h3>
+      <el-form-item prop="username">
+        <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号">
+          <template #prefix>
+            <svg-icon name="user" />
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="password">
+        <el-input v-model="registerForm.password" type="password" auto-complete="off" placeholder="密码" @keyup.enter.native="handleRegister">
+          <template #prefix>
+            <svg-icon name="password" />
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="confirmPassword">
+        <el-input
+          v-model="registerForm.confirmPassword"
+          type="password"
+          auto-complete="off"
+          placeholder="确认密码"
+          @keyup.enter.native="handleRegister"
+        >
+          <template #prefix>
+            <svg-icon name="password" />
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item v-if="captchaOnOff" prop="code">
+        <el-input v-model="registerForm.code" auto-complete="off" placeholder="验证码" style="width: 63%" @keyup.enter.native="handleRegister">
+          <template #prefix>
+            <svg-icon name="validCode" />
+          </template>
+        </el-input>
+        <div class="register-code ml10">
+          <img :src="codeUrl" class="register-code-img" @click="getCode">
+        </div>
+      </el-form-item>
+      <el-form-item style="width: 100%">
+        <el-button :loading="loading" type="primary" size="large" style="width: 100%" @click.native.prevent="handleRegister">
+          <span v-if="!loading">注 册</span>
+          <span v-else>注 册 中...</span>
+        </el-button>
+        <div style="float: right">
+          <router-link class="link-type" to="/login">
+            使用已有账户登录
+          </router-link>
+        </div>
+      </el-form-item>
+    </el-form>
+    <!--  底部  -->
+    <div class="el-register-footer">
+      <div v-html="defaultSettings.copyright" />
+    </div>
+  </div>
+</template>
 
 <style rel="stylesheet/scss" lang="scss">
 .register {

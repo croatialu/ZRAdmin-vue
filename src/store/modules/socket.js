@@ -3,10 +3,10 @@ const useSocketStore = defineStore('socket', {
     onlineNum: 0,
     onlineUsers: [],
     noticeList: [],
-    noticeDot: false
+    noticeDot: false,
   }),
   actions: {
-    //更新在线人数
+    // 更新在线人数
     setOnlineUserNum(num) {
       this.onlineNum = num
     },
@@ -21,7 +21,7 @@ const useSocketStore = defineStore('socket', {
     sendChat(data) {
       const { proxy } = getCurrentInstance()
       console.log(data)
-    }
-  }
+    },
+  },
 })
 export default useSocketStore

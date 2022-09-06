@@ -1,42 +1,3 @@
-<template>
-  <div class="component-upload-image">
-    <el-upload
-      multiple
-      :action="uploadImgUrl"
-      list-type="picture-card"
-      :on-success="handleUploadSuccess"
-      :before-upload="handleBeforeUpload"
-      :limit="limit"
-      :on-error="handleUploadError"
-      :on-exceed="handleExceed"
-      name="file"
-      :data="data"
-      :on-remove="handleRemove"
-      :show-file-list="true"
-      :headers="headers"
-      :file-list="fileList"
-      :on-preview="handlePictureCardPreview"
-      :class="{ hide: fileList.length >= limit }">
-      <el-icon class="avatar-uploader-icon"><plus /></el-icon>
-    </el-upload>
-    <!-- 上传提示 -->
-    <div class="el-upload__tip" v-if="showTip">
-      请上传
-      <template v-if="fileSize">
-        大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b>
-      </template>
-      <template v-if="fileType">
-        格式为 <b style="color: #f56c6c">{{ fileType.join('/') }}</b>
-      </template>
-      的文件
-    </div>
-
-    <el-dialog v-model="dialogVisible" title="预览" width="800px" append-to-body>
-      <img :src="dialogImageUrl" style="display: block; max-width: 100%; margin: 0 auto" />
-    </el-dialog>
-  </div>
-</template>
-
 <script setup>
 import { getToken } from '@/utils/auth'
 
@@ -68,15 +29,16 @@ const props = defineProps({
   },
 })
 
-const { proxy } = getCurrentInstance()
 const emit = defineEmits()
+
+const { proxy } = getCurrentInstance()
 const number = ref(0)
 const uploadList = ref([])
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 const baseUrl = import.meta.env.VITE_APP_BASE_API
 const uploadImgUrl = ref(baseUrl + import.meta.env.VITE_APP_UPLOAD_URL) // 上传的图片服务器地址
-const headers = ref({ Authorization: 'Bearer ' + getToken() })
+const headers = ref({ Authorization: `Bearer ${getToken()}` })
 const fileList = ref([])
 const showTip = computed(() => props.isShowTip && (props.fileType || props.fileSize))
 
@@ -97,7 +59,8 @@ watch(
         }
         return item
       })
-    } else {
+    }
+    else {
       fileList.value = []
       return []
     }
@@ -120,7 +83,7 @@ function handleUploadSuccess(res) {
   }
   uploadList.value.push({ name: res.data.fileName, url: res.data.url })
   if (uploadList.value.length === number.value) {
-    fileList.value = fileList.value.filter((f) => f.url !== undefined).concat(uploadList.value)
+    fileList.value = fileList.value.filter(f => f.url !== undefined).concat(uploadList.value)
     uploadList.value = []
     number.value = 0
     emit('update:modelValue', listToString(fileList.value))
@@ -133,16 +96,19 @@ function handleBeforeUpload(file) {
   let isImg = false
   if (props.fileType.length) {
     let fileExtension = ''
-    if (file.name.lastIndexOf('.') > -1) {
+    if (file.name.lastIndexOf('.') > -1)
       fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
-    }
+
     isImg = props.fileType.some((type) => {
-      if (file.type.indexOf(type) > -1) return true
-      if (fileExtension && fileExtension.indexOf(type) > -1) return true
+      if (file.type.includes(type))
+        return true
+      if (fileExtension && fileExtension.includes(type))
+        return true
       return false
     })
-  } else {
-    isImg = file.type.indexOf('image') > -1
+  }
+  else {
+    isImg = file.type.includes('image')
   }
   if (!isImg) {
     proxy.$modal.msgError(`文件格式不正确, 请上传${props.fileType.join('/')}图片格式文件!`)
@@ -180,11 +146,52 @@ function handlePictureCardPreview(file) {
 function listToString(list, separator) {
   let strs = ''
   separator = separator || ','
-  for (let i in list) {
-    if (undefined !== list[i].url && list[i].url.indexOf('blob:') !== 0) {
+  for (const i in list) {
+    if (undefined !== list[i].url && list[i].url.indexOf('blob:') !== 0)
       strs += list[i].url + separator
-    }
   }
   return strs != '' ? strs.substr(0, strs.length - 1) : ''
 }
 </script>
+
+<template>
+  <div class="component-upload-image">
+    <el-upload
+      multiple
+      :action="uploadImgUrl"
+      list-type="picture-card"
+      :on-success="handleUploadSuccess"
+      :before-upload="handleBeforeUpload"
+      :limit="limit"
+      :on-error="handleUploadError"
+      :on-exceed="handleExceed"
+      name="file"
+      :data="data"
+      :on-remove="handleRemove"
+      :show-file-list="true"
+      :headers="headers"
+      :file-list="fileList"
+      :on-preview="handlePictureCardPreview"
+      :class="{ hide: fileList.length >= limit }"
+    >
+      <el-icon class="avatar-uploader-icon">
+        <plus />
+      </el-icon>
+    </el-upload>
+    <!-- 上传提示 -->
+    <div v-if="showTip" class="el-upload__tip">
+      请上传
+      <template v-if="fileSize">
+        大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b>
+      </template>
+      <template v-if="fileType">
+        格式为 <b style="color: #f56c6c">{{ fileType.join('/') }}</b>
+      </template>
+      的文件
+    </div>
+
+    <el-dialog v-model="dialogVisible" title="预览" width="800px" append-to-body>
+      <img :src="dialogImageUrl" style="display: block; max-width: 100%; margin: 0 auto">
+    </el-dialog>
+  </div>
+</template>

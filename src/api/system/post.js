@@ -5,15 +5,15 @@ export function listPost(query) {
   return request({
     url: '/system/post/list',
     method: 'get',
-    params: query
+    params: query,
   })
 }
 
 // 查询岗位详细
 export function getPost(postId) {
   return request({
-    url: '/system/post/' + postId,
-    method: 'get'
+    url: `/system/post/${postId}`,
+    method: 'get',
   })
 }
 
@@ -22,7 +22,7 @@ export function addPost(data) {
   return request({
     url: '/system/post',
     method: 'post',
-    data: data
+    data,
   })
 }
 
@@ -31,15 +31,15 @@ export function updatePost(data) {
   return request({
     url: '/system/post',
     method: 'put',
-    data: data
+    data,
   })
 }
 
 // 删除岗位
 export function delPost(postId) {
   return request({
-    url: '/system/post/' + postId,
-    method: 'delete'
+    url: `/system/post/${postId}`,
+    method: 'delete',
   })
 }
 
@@ -48,6 +48,6 @@ export function exportPost(query) {
   return request({
     url: '/system/post/export',
     method: 'get',
-    params: query
+    params: query,
   })
 }

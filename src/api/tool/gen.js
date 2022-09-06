@@ -1,4 +1,4 @@
-import request from '@/utils/request';
+import request from '@/utils/request'
 
 /**
  * 获取数据库
@@ -26,7 +26,7 @@ export async function codeGenerator(data) {
   return await request({
     url: 'tool/gen/genCode',
     method: 'POST',
-    data: data,
+    data,
   })
 }
 
@@ -37,7 +37,7 @@ export async function codeGenerator(data) {
  */
 export function queryColumnInfo(tableId) {
   return request({
-    url: 'tool/gen/Column/' + tableId,
+    url: `tool/gen/Column/${tableId}`,
     method: 'GET',
   })
 }
@@ -47,15 +47,15 @@ export function listTable(params) {
   return request({
     url: 'tool/gen/list',
     method: 'get',
-    params: params
+    params,
   })
 }
 
 // 查询表详细信息
 export function getGenTable(tableId) {
   return request({
-    url: '/tool/gen/' + tableId,
-    method: 'get'
+    url: `/tool/gen/${tableId}`,
+    method: 'get',
   })
 }
 
@@ -64,14 +64,14 @@ export function importTable(data) {
   return request({
     url: '/tool/gen/importTable',
     method: 'post',
-    params: data
+    params: data,
   })
 }
 // 删除表数据
 export function delTable(tableId) {
   return request({
-    url: '/tool/gen/' + tableId,
-    method: 'delete'
+    url: `/tool/gen/${tableId}`,
+    method: 'delete',
   })
 }
 
@@ -80,24 +80,24 @@ export function updateGenTable(data) {
   return request({
     url: '/tool/gen/',
     method: 'put',
-    data: data
+    data,
   })
 }
 
 // 预览生成代码
 export function previewTable(tableId, data) {
   return request({
-    url: '/tool/gen/preview/' + tableId,
+    url: `/tool/gen/preview/${tableId}`,
     method: 'post',
-    params: data
+    params: data,
   })
 }
 
 // 同步数据库
 export function synchDb(tableId, data) {
   return request({
-    url: '/tool/gen/synchDb/' + tableId,
+    url: `/tool/gen/synchDb/${tableId}`,
     method: 'get',
-		params: data
+    params: data,
   })
 }

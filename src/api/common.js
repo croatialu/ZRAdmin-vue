@@ -4,8 +4,8 @@ export function upload(data) {
   return request({
     url: '/common/UploadFile',
     method: 'POST',
-    data: data,
-    headers: { "Content-Type": "multipart/form-data" },
+    data,
+    headers: { 'Content-Type': 'multipart/form-data' },
   })
 }
 
@@ -18,6 +18,6 @@ export function sendEmail(data) {
   return request({
     url: '/common/SendEmail',
     method: 'POST',
-    data: data,
+    data,
   })
 }

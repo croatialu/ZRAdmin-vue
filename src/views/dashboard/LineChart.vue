@@ -1,11 +1,5 @@
-<template>
-  <div ref="chartRef" :class="className" :style="{ height: height, width: width }" />
-</template>
-
 <script setup>
 import * as echarts from 'echarts'
-const { proxy } = getCurrentInstance()
-const chartRef = ref(null)
 const props = defineProps({
   className: {
     type: String,
@@ -28,6 +22,8 @@ const props = defineProps({
     required: true,
   },
 })
+const { proxy } = getCurrentInstance()
+const chartRef = ref(null)
 let chart = null
 watch(
   () => props.chartData,
@@ -116,3 +112,7 @@ window.onresize = function () {
   chart.resize()
 }
 </script>
+
+<template>
+  <div ref="chartRef" :class="className" :style="{ height, width }" />
+</template>

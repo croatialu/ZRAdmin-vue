@@ -1,14 +1,14 @@
-<template>
-  <div>
-    <svg-icon :name="isFullscreen ? 'exit-fullscreen' : 'fullscreen'" @click="toggle" />
-  </div>
-</template>
-
 <script setup>
 import { useFullscreen } from '@vueuse/core'
 
 const { isFullscreen, enter, exit, toggle } = useFullscreen()
 </script>
+
+<template>
+  <div>
+    <svg-icon :name="isFullscreen ? 'exit-fullscreen' : 'fullscreen'" @click="toggle" />
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .screenfull-svg {

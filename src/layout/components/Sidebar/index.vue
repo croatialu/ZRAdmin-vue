@@ -1,22 +1,3 @@
-<template>
-  <el-aside :data-theme="sideTheme" class="sidebar" :class="{ 'has-logo': showLogo }">
-    <logo v-if="showLogo" :collapse="isCollapse" />
-
-    <el-scrollbar :class="sideTheme" wrap-class="scrollbar-wrapper">
-      <el-menu
-        :default-active="activeMenu"
-        :collapse="isCollapse"
-        :unique-opened="true"
-        :active-text-color="theme"
-        :collapse-transition="false"
-        background-color="transparent"
-        mode="vertical">
-        <sidebar-item v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route" :base-path="route.path" />
-      </el-menu>
-    </el-scrollbar>
-  </el-aside>
-</template>
-
 <script setup>
 import Logo from './Logo'
 import SidebarItem from './SidebarItem'
@@ -38,9 +19,29 @@ const isCollapse = computed(() => !appStore.sidebar.opened)
 const activeMenu = computed(() => {
   const { meta, path } = route
   // if set path, the sidebar will highlight the path you set
-  if (meta.activeMenu) {
+  if (meta.activeMenu)
     return meta.activeMenu
-  }
+
   return path
 })
 </script>
+
+<template>
+  <el-aside :data-theme="sideTheme" class="sidebar" :class="{ 'has-logo': showLogo }">
+    <Logo v-if="showLogo" :collapse="isCollapse" />
+
+    <el-scrollbar :class="sideTheme" wrap-class="scrollbar-wrapper">
+      <el-menu
+        :default-active="activeMenu"
+        :collapse="isCollapse"
+        :unique-opened="true"
+        :active-text-color="theme"
+        :collapse-transition="false"
+        background-color="transparent"
+        mode="vertical"
+      >
+        <SidebarItem v-for="(route, index) in sidebarRouters" :key="route.path + index" :item="route" :base-path="route.path" />
+      </el-menu>
+    </el-scrollbar>
+  </el-aside>
+</template>

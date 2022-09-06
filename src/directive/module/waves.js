@@ -5,30 +5,32 @@
  */
 export default {
   mounted(el, binding) {
-    el.classList.add('waves-effect');
-    binding.value && el.classList.add(`waves-${binding.value}`);
+    el.classList.add('waves-effect')
+    binding.value && el.classList.add(`waves-${binding.value}`)
 
     function setConvertStyle(obj) {
-      let style = '';
-      for (let i in obj) {
-        if (obj.hasOwnProperty(i)) style += `${i}:${obj[i]};`;
+      let style = ''
+      for (const i in obj) {
+        if (obj.hasOwnProperty(i))
+          style += `${i}:${obj[i]};`
       }
-      return style;
+
+      return style
     }
 
     function onCurrentClick(e) {
-      let elDiv = document.createElement('div');
-      elDiv.classList.add('waves-ripple');
-      el.appendChild(elDiv);
-      let styles = {
-        left: `${e.layerX}px`,
-        top: `${e.layerY}px`,
-        opacity: 1,
-        transform: `scale(${(el.clientWidth / 100) * 10})`,
-        'transition-duration': `750ms`,
-        'transition-timing-function': `cubic-bezier(0.250, 0.460, 0.450, 0.940)`,
-      };
-      elDiv.setAttribute('style', setConvertStyle(styles));
+      const elDiv = document.createElement('div')
+      elDiv.classList.add('waves-ripple')
+      el.appendChild(elDiv)
+      const styles = {
+        'left': `${e.layerX}px`,
+        'top': `${e.layerY}px`,
+        'opacity': 1,
+        'transform': `scale(${(el.clientWidth / 100) * 10})`,
+        'transition-duration': '750ms',
+        'transition-timing-function': 'cubic-bezier(0.250, 0.460, 0.450, 0.940)',
+      }
+      elDiv.setAttribute('style', setConvertStyle(styles))
       setTimeout(() => {
         elDiv.setAttribute(
           'style',
@@ -37,16 +39,16 @@ export default {
             transform: styles.transform,
             left: styles.left,
             top: styles.top,
-          })
-        );
+          }),
+        )
         setTimeout(() => {
-          elDiv && el.removeChild(elDiv);
-        }, 750);
-      }, 450);
+          elDiv && el.removeChild(elDiv)
+        }, 750)
+      }, 450)
     }
-    el.addEventListener('mousedown', onCurrentClick, false);
+    el.addEventListener('mousedown', onCurrentClick, false)
   },
   unmounted(el) {
-    el.addEventListener('mousedown', () => {});
+    el.addEventListener('mousedown', () => {})
   },
 }

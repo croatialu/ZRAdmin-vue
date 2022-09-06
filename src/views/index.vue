@@ -1,3 +1,12 @@
+<script setup name="index">
+import defaultSettings from '@/settings'
+const version = defaultSettings.version
+
+function goTarget(url) {
+  window.open(url, '__blank')
+}
+</script>
+
 <template>
   <div class="app-container home">
     <el-row :gutter="20">
@@ -7,30 +16,41 @@
           <el-link href="https://www.aliyun.com/minisite/goods?userCode=uotn5vt1&share_source=copy_link" type="primary" target="_black">
             ☛☛点我进入☚☚
           </el-link>
-          <br />
+          <br>
           【领取腾讯云通用云产品新用户专属大礼包2860优惠券，每种代金券限量500张，先到先得。】
-          <el-link href="https://curl.qcloud.com/5J4nag8D" type="primary" target="_blank"> ☛☛点我进入☚☚ </el-link>
-          <br />
+          <el-link href="https://curl.qcloud.com/5J4nag8D" type="primary" target="_blank">
+            ☛☛点我进入☚☚
+          </el-link>
+          <br>
 
           【腾讯云限时秒杀活动】
-          <el-link href="https://curl.qcloud.com/4yEoRquq" type="primary" target="_blank">☛☛点我进入☚☚ </el-link>
-          <br />
+          <el-link href="https://curl.qcloud.com/4yEoRquq" type="primary" target="_blank">
+            ☛☛点我进入☚☚
+          </el-link>
+          <br>
 
           【华为特惠专区，多款产品限时特价】
           <el-link
             href="https://activity.huaweicloud.com/discount_area_v5/index.html?fromacct=a53709d1-149d-49f4-9b89-bf62bd96ef65&utm_source=aGlkX3N0dnZkMWNxejBnOTJ5OA===&utm_medium=cps&utm_campaign=201905"
             type="primary"
-            target="_blank">
+            target="_blank"
+          >
             ☛☛点我进入☚☚
           </el-link>
-          <br />
+          <br>
           【领取七牛云通用云产品优惠券】
-          <el-link href="https://s.qiniu.com/FzEfay" type="primary" target="_blank"> ☛☛点我进入☚☚ </el-link>
-          <br />
+          <el-link href="https://s.qiniu.com/FzEfay" type="primary" target="_blank">
+            ☛☛点我进入☚☚
+          </el-link>
+          <br>
           【Gitee 企业版优惠专区】
-          <el-link href="https://gitee.com/enterprises?invite_code=Z2l0ZWUtMTI1NzM1OQ%3D%3D" type="primary" target="_blank"> ☛☛点我进入☚☚ </el-link>
-          <br />
-          <h4 class="text-danger">云产品通用红包，可叠加官网常规优惠使用。(仅限新用户)</h4>
+          <el-link href="https://gitee.com/enterprises?invite_code=Z2l0ZWUtMTI1NzM1OQ%3D%3D" type="primary" target="_blank">
+            ☛☛点我进入☚☚
+          </el-link>
+          <br>
+          <h4 class="text-danger">
+            云产品通用红包，可叠加官网常规优惠使用。(仅限新用户)
+          </h4>
         </blockquote>
       </el-col>
     </el-row>
@@ -50,17 +70,20 @@
             size="small"
             icon="Document"
             plain
-            @click="goTarget('http://www.izhaorui.cn/doc/changelog.html#' + version)"
-            >{{ $t('layout.changeLog') }}
+            @click="goTarget(`http://www.izhaorui.cn/doc/changelog.html#${version}`)"
+          >
+            {{ $t('layout.changeLog') }}
           </el-link>
         </p>
         <p>
-          <el-button type="primary" size="small" icon="Cloudy" plain @click="goTarget('https://gitee.com/izory/ZrAdminNetCore')">Gitee </el-button>
-          <el-button type="primary" size="small" icon="Cloudy" plain @click="goTarget('https://github.com/izhaorui/ZrAdmin.NET')"
-            >Github
+          <el-button type="primary" size="small" icon="Cloudy" plain @click="goTarget('https://gitee.com/izory/ZrAdminNetCore')">
+            Gitee
+          </el-button>
+          <el-button type="primary" size="small" icon="Cloudy" plain @click="goTarget('https://github.com/izhaorui/ZrAdmin.NET')">
+            Github
           </el-button>
         </p>
-        <p></p>
+        <p />
         <h3>{{ $t('layout.tip1') }}</h3>
       </el-col>
       <el-col :lg="8" :sm="24">
@@ -106,8 +129,10 @@
           </template>
 
           <div class="body">
-            <div style="color: red">{{ $t('layout.rewardUser') }}</div>
-            <img src="@/assets/images/reward.jpg" alt="donate" style="width: 100%" />
+            <div style="color: red">
+              {{ $t('layout.rewardUser') }}
+            </div>
+            <img src="@/assets/images/reward.jpg" alt="donate" style="width: 100%">
           </div>
         </el-card>
       </el-col>
@@ -119,13 +144,16 @@
           <div class="body">
             <p>
               <el-icon> <promotion /> </el-icon>{{ $t('layout.officialWebsite') }}：
-              <el-link href="http://www.izhaorui.cn/doc" target="_blank"> http://www.izhaorui.cn/doc </el-link>
+              <el-link href="http://www.izhaorui.cn/doc" target="_blank">
+                http://www.izhaorui.cn/doc
+              </el-link>
             </p>
             <p>
               <el-icon> <UserFilled /> </el-icon>{{ $t('layout.qqGroup') }}：
               <el-link
                 target="_black"
-                href="https://qm.qq.com/cgi-bin/qm/qr?k=Y__-fTGo_K2UIo3nWz7QnvS8LoRfPWKm&authKey=/ldXxiuolv80PF4yC8VtLk/TvAYbIhm2LKP8YVHCxAk+x2I+iqPAM1H/IsxQ+0gC&noverify=0">
+                href="https://qm.qq.com/cgi-bin/qm/qr?k=Y__-fTGo_K2UIo3nWz7QnvS8LoRfPWKm&authKey=/ldXxiuolv80PF4yC8VtLk/TvAYbIhm2LKP8YVHCxAk+x2I+iqPAM1H/IsxQ+0gC&noverify=0"
+              >
                 191349103
               </el-link>
             </p>
@@ -135,15 +163,6 @@
     </el-row>
   </div>
 </template>
-
-<script setup name="index">
-import defaultSettings from '@/settings'
-const version = defaultSettings.version
-
-function goTarget(url) {
-  window.open(url, '__blank')
-}
-</script>
 
 <style scoped lang="scss">
 .home {

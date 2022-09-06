@@ -1,9 +1,3 @@
-<template>
-  <component :is="type" v-bind="linkProps()">
-    <slot />
-  </component>
-</template>
-
 <script setup>
 import { isExternal } from '@/utils/validate'
 
@@ -19,9 +13,9 @@ const isExt = computed(() => {
 })
 
 const type = computed(() => {
-  if (isExt.value) {
+  if (isExt.value)
     return 'a'
-  }
+
   return 'router-link'
 })
 
@@ -38,3 +32,9 @@ function linkProps() {
   }
 }
 </script>
+
+<template>
+  <component :is="type" v-bind="linkProps()">
+    <slot />
+  </component>
+</template>

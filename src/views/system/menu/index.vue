@@ -50,7 +50,7 @@ const { queryParams, form, rules, sys_show_hide, sys_normal_disable } = toRefs(s
 /** 查询菜单列表 */
 function getList() {
   loading.value = true
-  if (queryParams.value.parentId != undefined)
+  if (queryParams.value.parentId !== undefined)
     queryParams.value.menuTypeIds = ''
 
   listMenu(queryParams.value).then((response) => {

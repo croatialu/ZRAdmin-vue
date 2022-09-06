@@ -1,14 +1,8 @@
-<template>
-  <div ref="chartRef" :class="className" :style="{ height: props.height, width: props.width }" />
-</template>
-
 <script setup>
 import * as echarts from 'echarts'
 
 import { useDebounceFn } from '@vueuse/core'
 import 'echarts-wordcloud'
-
-const { proxy } = getCurrentInstance()
 
 const props = defineProps({
   name: {
@@ -40,10 +34,13 @@ const props = defineProps({
     default: '300px',
   },
 })
+
+const { proxy } = getCurrentInstance()
+
 let chart = null
 const chartRef = ref()
 
-//重绘图表函数
+// 重绘图表函数
 const resizeHandler = () => {
   chart.resize()
 }
@@ -64,9 +61,9 @@ function initChart() {
         rotationRange: [-45, 0, 45, 90],
         textStyle: {
           normal: {
-            color: function () {
+            color() {
               return (
-                'rgb(' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ', ' + Math.round(Math.random() * 255) + ')'
+                `rgb(${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)}, ${Math.round(Math.random() * 255)})`
               )
             },
           },
@@ -94,3 +91,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('resize', debouncedFn)
 })
 </script>
+
+<template>
+  <div ref="chartRef" :class="className" :style="{ height: props.height, width: props.width }" />
+</template>

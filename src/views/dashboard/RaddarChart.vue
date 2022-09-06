@@ -1,7 +1,3 @@
-<template>
-  <div :class="className" :style="{ height: height, width: width }" />
-</template>
-
 <script>
 import * as echarts from 'echarts'
 
@@ -33,10 +29,10 @@ export default {
       this.initChart()
     })
   },
-  beforeDestroy() {
-    if (!this.chart) {
+  beforeUnmount() {
+    if (!this.chart)
       return
-    }
+
     this.chart.dispose()
     this.chart = null
   },
@@ -105,7 +101,7 @@ export default {
                 name: 'Actual Spending',
               },
             ],
-            animationDuration: animationDuration,
+            animationDuration,
           },
         ],
       })
@@ -113,3 +109,7 @@ export default {
   },
 }
 </script>
+
+<template>
+  <div :class="className" :style="{ height, width }" />
+</template>

@@ -1,15 +1,3 @@
-<template>
-  <div style="border: 1px solid #ccc">
-    <Toolbar style="border-bottom: 1px solid #ccc" :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode" />
-    <Editor
-      style="height: 500px; overflow-y: hidden"
-      v-model="valueHtml"
-      :defaultConfig="editorConfig"
-      :mode="mode"
-      @onCreated="handleCreated"
-      @onChange="handleChange" />
-  </div>
-</template>
 <script>
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { onBeforeUnmount, ref, shallowRef } from 'vue'
@@ -33,9 +21,9 @@ export default {
       MENU_CONF: {},
       placeholder: props.placeholder,
     }
-    //上传图片
-    editorConfig.MENU_CONF['uploadImage'] = {
-      server: import.meta.env.VITE_APP_BASE_API + '/common/UploadFile',
+    // 上传图片
+    editorConfig.MENU_CONF.uploadImage = {
+      server: `${import.meta.env.VITE_APP_BASE_API}/common/UploadFile`,
       // form-data fieldName ，默认值 'wangeditor-uploaded-image'
       fieldName: 'file',
       // 单个文件的最大体积限制，默认为 2M
@@ -48,7 +36,7 @@ export default {
       metaWithUrl: false,
       // 自定义增加 http  header
       headers: {
-        Authorization: 'Bearer ' + getToken(),
+        Authorization: `Bearer ${getToken()}`,
         userid: useUserStore().userId,
       },
       // 跨域是否传递 cookie ，默认为 false
@@ -57,15 +45,15 @@ export default {
       timeout: 5 * 1000, // 5 秒
       // 自定义插入图片
       customInsert(res, insertFn) {
-        ;-(
+        -(
           // 从 res 中找到 url alt href ，然后插图图片
           insertFn(res.data.url)
         )
       },
     }
-    //上传视频
-    editorConfig.MENU_CONF['uploadVideo'] = {
-      server: import.meta.env.VITE_APP_BASE_API + '/common/UploadFile',
+    // 上传视频
+    editorConfig.MENU_CONF.uploadVideo = {
+      server: `${import.meta.env.VITE_APP_BASE_API}/common/UploadFile`,
       // form-data fieldName ，默认值 'wangeditor-uploaded-video'
       fieldName: 'file',
 
@@ -83,7 +71,7 @@ export default {
 
       // 自定义增加 http  header
       headers: {
-        Authorization: 'Bearer ' + getToken(),
+        Authorization: `Bearer ${getToken()}`,
         userid: useUserStore().userId,
       },
 
@@ -93,7 +81,7 @@ export default {
       timeout: 15 * 1000, // 15 秒
       // 自定义插入视频
       customInsert(res, insertFn) {
-        ;-(
+        -(
           // 从 res 中找到 url alt href ，然后插图图片
           insertFn(res.data.url)
         )
@@ -101,7 +89,8 @@ export default {
     }
     onBeforeUnmount(() => {
       const editor = editorRef.value
-      if (editor == null) return
+      if (editor == null)
+        return
       editor.destroy()
     })
     const handleCreated = (editor) => {
@@ -118,7 +107,7 @@ export default {
           editor.clear()
           return
         }
-        valueHtml.value = value;
+        valueHtml.value = value
       },
     )
     return {
@@ -133,3 +122,17 @@ export default {
   },
 }
 </script>
+
+<template>
+  <div style="border: 1px solid #ccc">
+    <Toolbar style="border-bottom: 1px solid #ccc" :editor="editorRef" :default-config="toolbarConfig" :mode="mode" />
+    <Editor
+      v-model="valueHtml"
+      style="height: 500px; overflow-y: hidden"
+      :default-config="editorConfig"
+      :mode="mode"
+      @onCreated="handleCreated"
+      @onChange="handleChange"
+    />
+  </div>
+</template>

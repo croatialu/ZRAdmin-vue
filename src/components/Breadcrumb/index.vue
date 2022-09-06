@@ -1,16 +1,3 @@
-<template>
-  <el-breadcrumb class="app-breadcrumb" separator="/">
-    <!-- <transition-group name="breadcrumb"> -->
-    <el-breadcrumb-item v-for="(item, index) in levelList" :key="item.path">
-      <span v-if="item.redirect === 'noRedirect' || index == levelList.length - 1" class="no-redirect">{{ item.meta.title }}</span>
-      <span v-else @click.prevent="handleLink(item)" style="cursor: pointer">
-        {{ item.meta.title }}
-      </span>
-    </el-breadcrumb-item>
-    <!-- </transition-group> -->
-  </el-breadcrumb>
-</template>
-
 <script setup>
 const route = useRoute()
 const router = useRouter()
@@ -18,21 +5,20 @@ const levelList = ref([])
 
 function getBreadcrumb() {
   // only show routes with meta.title
-  let matched = route.matched.filter((item) => item.meta && item.meta.title)
+  let matched = route.matched.filter(item => item.meta && item.meta.title)
   const first = matched[0]
   // 判断是否为首页
-  if (!isDashboard(first)) {
+  if (!isDashboard(first))
     matched = [{ path: '/index', meta: { title: '首页' } }].concat(matched)
-  }
 
-  levelList.value = matched.filter((item) => item.meta && item.meta.title && item.meta.breadcrumb !== false)
+  levelList.value = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
 }
 
 function isDashboard(route) {
   const name = route && route.name
-  if (!name) {
+  if (!name)
     return false
-  }
+
   return name.trim() === 'Index'
 }
 function handleLink(item) {
@@ -46,13 +32,26 @@ function handleLink(item) {
 
 watchEffect(() => {
   // if you go to the redirect page, do not update the breadcrumbs
-  if (route.path.startsWith('/redirect/')) {
+  if (route.path.startsWith('/redirect/'))
     return
-  }
+
   getBreadcrumb()
 })
 getBreadcrumb()
 </script>
+
+<template>
+  <el-breadcrumb class="app-breadcrumb" separator="/">
+    <!-- <transition-group name="breadcrumb"> -->
+    <el-breadcrumb-item v-for="(item, index) in levelList" :key="item.path">
+      <span v-if="item.redirect === 'noRedirect' || index == levelList.length - 1" class="no-redirect">{{ item.meta.title }}</span>
+      <span v-else style="cursor: pointer" @click.prevent="handleLink(item)">
+        {{ item.meta.title }}
+      </span>
+    </el-breadcrumb-item>
+    <!-- </transition-group> -->
+  </el-breadcrumb>
+</template>
 
 <style lang="scss" scoped>
 .app-breadcrumb.el-breadcrumb {

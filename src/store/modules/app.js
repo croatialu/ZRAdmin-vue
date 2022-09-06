@@ -5,24 +5,23 @@ const useAppStore = defineStore('app', {
     sidebar: {
       opened: Cookies.get('sidebarStatus') ? !!+Cookies.get('sidebarStatus') : true,
       withoutAnimation: false,
-      hide: false
+      hide: false,
     },
     device: 'desktop',
     size: Cookies.get('size') || 'small',
-    lang: Cookies.get('lang') || 'zh-cn'
+    lang: Cookies.get('lang') || 'zh-cn',
   }),
   actions: {
     toggleSideBar(withoutAnimation) {
-      if (this.sidebar.hide) {
+      if (this.sidebar.hide)
         return false
-      }
+
       this.sidebar.opened = !this.sidebar.opened
       this.sidebar.withoutAnimation = withoutAnimation
-      if (this.sidebar.opened) {
+      if (this.sidebar.opened)
         Cookies.set('sidebarStatus', 1)
-      } else {
+      else
         Cookies.set('sidebarStatus', 0)
-      }
     },
     closeSideBar(withoutAnimation) {
       Cookies.set('sidebarStatus', 0)
@@ -42,8 +41,8 @@ const useAppStore = defineStore('app', {
     setLang(lang) {
       this.lang = lang
       Cookies.set('lang', lang)
-    }
-  }
+    },
+  },
 })
 
 export default useAppStore

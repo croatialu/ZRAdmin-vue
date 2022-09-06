@@ -1,74 +1,68 @@
+import Cookies from 'js-cookie'
 const sessionCache = {
   set(key, value) {
-    if (!sessionStorage) {
+    if (!sessionStorage)
       return
-    }
-    if (key != null && value != null) {
+
+    if (key != null && value != null)
       sessionStorage.setItem(key, value)
-    }
   },
   get(key) {
-    if (!sessionStorage) {
+    if (!sessionStorage)
       return null
-    }
-    if (key == null) {
+
+    if (key == null)
       return null
-    }
+
     return sessionStorage.getItem(key)
   },
   setJSON(key, jsonValue) {
-    if (jsonValue != null) {
+    if (jsonValue != null)
       this.set(key, JSON.stringify(jsonValue))
-    }
   },
   getJSON(key) {
     const value = this.get(key)
-    if (value != null) {
+    if (value != null)
       return JSON.parse(value)
-    }
   },
   remove(key) {
-    sessionStorage.removeItem(key);
-  }
+    sessionStorage.removeItem(key)
+  },
 }
 const localCache = {
   set(key, value) {
-    if (!localStorage) {
+    if (!localStorage)
       return
-    }
-    if (key != null && value != null) {
+
+    if (key != null && value != null)
       localStorage.setItem(key, value)
-    }
   },
   get(key) {
-    if (!localStorage) {
+    if (!localStorage)
       return null
-    }
-    if (key == null) {
+
+    if (key == null)
       return null
-    }
+
     return localStorage.getItem(key)
   },
   setJSON(key, jsonValue) {
-    if (jsonValue != null) {
+    if (jsonValue != null)
       this.set(key, JSON.stringify(jsonValue))
-    }
   },
   getJSON(key) {
     const value = this.get(key)
-    if (value != null) {
+    if (value != null)
       return JSON.parse(value)
-    }
   },
   remove(key) {
-    localStorage.removeItem(key);
-  }
+    localStorage.removeItem(key)
+  },
 }
-import Cookies from 'js-cookie'
 
 const cookie = {
   set(key, data, expires) {
-    Cookies.set(key, data, { expires: expires })
+    Cookies.set(key, data, { expires })
   },
   set(key, data) {
     Cookies.set(key, data)
@@ -78,7 +72,7 @@ const cookie = {
   },
   get(key) {
     Cookies.get(key)
-  }
+  },
 }
 export default {
   /**
@@ -92,5 +86,5 @@ export default {
   /**
    * cookie存储
    */
-  cookie: cookie
+  cookie,
 }

@@ -1,7 +1,7 @@
 const useTagsViewStore = defineStore('tagsView', {
   state: () => ({
     visitedViews: [],
-    cachedViews: []
+    cachedViews: [],
   }),
   actions: {
     addView(view) {
@@ -9,18 +9,19 @@ const useTagsViewStore = defineStore('tagsView', {
       this.addCachedView(view)
     },
     addVisitedView(view) {
-      if (this.visitedViews.some((v) => v.path === view.path)) return
+      if (this.visitedViews.some(v => v.path === view.path))
+        return
       this.visitedViews.push(
         Object.assign({}, view, {
-          title: view.meta.title || 'no-name'
-        })
+          title: view.meta.title || 'no-name',
+        }),
       )
     },
     addCachedView(view) {
-      if (this.cachedViews.includes(view.name)) return
-      if (!view.meta.noCache) {
+      if (this.cachedViews.includes(view.name))
+        return
+      if (!view.meta.noCache)
         this.cachedViews.push(view.name)
-      }
     },
     delView(view) {
       return new Promise((resolve) => {
@@ -28,7 +29,7 @@ const useTagsViewStore = defineStore('tagsView', {
         this.delCachedView(view)
         resolve({
           visitedViews: [...this.visitedViews],
-          cachedViews: [...this.cachedViews]
+          cachedViews: [...this.cachedViews],
         })
       })
     },
@@ -56,7 +57,7 @@ const useTagsViewStore = defineStore('tagsView', {
         this.delOthersCachedViews(view)
         resolve({
           visitedViews: [...this.visitedViews],
-          cachedViews: [...this.cachedViews]
+          cachedViews: [...this.cachedViews],
         })
       })
     },
@@ -71,11 +72,11 @@ const useTagsViewStore = defineStore('tagsView', {
     delOthersCachedViews(view) {
       return new Promise((resolve) => {
         const index = this.cachedViews.indexOf(view.name)
-        if (index > -1) {
+        if (index > -1)
           this.cachedViews = this.cachedViews.slice(index, index + 1)
-        } else {
+        else
           this.cachedViews = []
-        }
+
         resolve([...this.cachedViews])
       })
     },
@@ -85,13 +86,13 @@ const useTagsViewStore = defineStore('tagsView', {
         this.delAllCachedViews(view)
         resolve({
           visitedViews: [...this.visitedViews],
-          cachedViews: [...this.cachedViews]
+          cachedViews: [...this.cachedViews],
         })
       })
     },
     delAllVisitedViews(view) {
       return new Promise((resolve) => {
-        const affixTags = this.visitedViews.filter((tag) => tag.meta.affix)
+        const affixTags = this.visitedViews.filter(tag => tag.meta.affix)
         this.visitedViews = affixTags
         resolve([...this.visitedViews])
       })
@@ -112,18 +113,18 @@ const useTagsViewStore = defineStore('tagsView', {
     },
     delRightTags(view) {
       return new Promise((resolve) => {
-        const index = this.visitedViews.findIndex((v) => v.path === view.path)
-        if (index === -1) {
+        const index = this.visitedViews.findIndex(v => v.path === view.path)
+        if (index === -1)
           return
-        }
+
         this.visitedViews = this.visitedViews.filter((item, idx) => {
-          if (idx <= index || (item.meta && item.meta.affix)) {
+          if (idx <= index || (item.meta && item.meta.affix))
             return true
-          }
+
           const i = this.cachedViews.indexOf(item.name)
-          if (i > -1) {
+          if (i > -1)
             this.cachedViews.splice(i, 1)
-          }
+
           return false
         })
         resolve([...this.visitedViews])
@@ -131,24 +132,24 @@ const useTagsViewStore = defineStore('tagsView', {
     },
     delLeftTags(view) {
       return new Promise((resolve) => {
-        const index = this.visitedViews.findIndex((v) => v.path === view.path)
-        if (index === -1) {
+        const index = this.visitedViews.findIndex(v => v.path === view.path)
+        if (index === -1)
           return
-        }
+
         this.visitedViews = this.visitedViews.filter((item, idx) => {
-          if (idx >= index || (item.meta && item.meta.affix)) {
+          if (idx >= index || (item.meta && item.meta.affix))
             return true
-          }
+
           const i = this.cachedViews.indexOf(item.name)
-          if (i > -1) {
+          if (i > -1)
             this.cachedViews.splice(i, 1)
-          }
+
           return false
         })
         resolve([...this.visitedViews])
       })
-    }
-  }
+    },
+  },
 })
 
 export default useTagsViewStore

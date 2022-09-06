@@ -1,21 +1,3 @@
-<template>
-  <el-form ref="pwdRef" :model="user" :rules="rules" label-width="130px" label-position="left">
-    <el-form-item :label="$t('user.oldPwd')" prop="oldPassword">
-      <el-input v-model="user.oldPassword" placeholder="请输入旧密码" type="password" show-password />
-    </el-form-item>
-    <el-form-item :label="$t('user.newPwd')" prop="newPassword">
-      <el-input v-model="user.newPassword" placeholder="请输入新密码" type="password" show-password />
-    </el-form-item>
-    <el-form-item :label="$t('user.confirmPwd')" prop="confirmPassword">
-      <el-input v-model="user.confirmPassword" placeholder="请确认密码" type="password" show-password />
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" icon="Check" @click="submit">{{ $t('btn.save') }}</el-button>
-      <el-button type="danger" icon="Close" @click="close">{{ $t('btn.close') }}</el-button>
-    </el-form-item>
-  </el-form>
-</template>
-
 <script setup>
 import { updateUserPwd } from '@/api/system/user'
 
@@ -28,11 +10,10 @@ const user = reactive({
 })
 
 const equalToPassword = (rule, value, callback) => {
-  if (user.newPassword !== value) {
+  if (user.newPassword !== value)
     callback(new Error('两次输入的密码不一致'))
-  } else {
+  else
     callback()
-  }
 }
 const rules = ref({
   oldPassword: [{ required: true, message: '旧密码不能为空', trigger: 'blur' }],
@@ -61,3 +42,25 @@ function close() {
   proxy.$tab.closePage()
 }
 </script>
+
+<template>
+  <el-form ref="pwdRef" :model="user" :rules="rules" label-width="130px" label-position="left">
+    <el-form-item :label="$t('user.oldPwd')" prop="oldPassword">
+      <el-input v-model="user.oldPassword" placeholder="请输入旧密码" type="password" show-password />
+    </el-form-item>
+    <el-form-item :label="$t('user.newPwd')" prop="newPassword">
+      <el-input v-model="user.newPassword" placeholder="请输入新密码" type="password" show-password />
+    </el-form-item>
+    <el-form-item :label="$t('user.confirmPwd')" prop="confirmPassword">
+      <el-input v-model="user.confirmPassword" placeholder="请确认密码" type="password" show-password />
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" icon="Check" @click="submit">
+        {{ $t('btn.save') }}
+      </el-button>
+      <el-button type="danger" icon="Close" @click="close">
+        {{ $t('btn.close') }}
+      </el-button>
+    </el-form-item>
+  </el-form>
+</template>

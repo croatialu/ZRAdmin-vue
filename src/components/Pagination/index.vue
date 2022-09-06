@@ -1,25 +1,8 @@
-<template>
-  <div :class="{ hidden: hidden }" class="pagination-container">
-    <el-pagination
-      small
-      background
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      :layout="layout"
-      :page-sizes="pageSizes"
-      :pager-count="pagerCount"
-      :total="total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange" />
-  </div>
-</template>
-
 <script>
 // import { scrollTo } from "@/utils/scroll-to";
 import { computed } from 'vue'
 export default {
-  name: 'pagingation',
-  emits: ['update:page', 'update:limit', 'pagination'],
+  name: 'Pagingation',
   props: {
     total: {
       required: true,
@@ -61,6 +44,7 @@ export default {
       default: false,
     },
   },
+  emits: ['update:page', 'update:limit', 'pagination'],
   setup(props, { ctx, emit }) {
     const currentPage = computed({
       get() {
@@ -101,6 +85,24 @@ export default {
   },
 }
 </script>
+
+<template>
+  <div :class="{ hidden }" class="pagination-container">
+    <el-pagination
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      small
+      background
+      :layout="layout"
+      :page-sizes="pageSizes"
+      :pager-count="pagerCount"
+      :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+  </div>
+</template>
+
 <style scoped>
 .pagination-container {
   /* background: #fff; */

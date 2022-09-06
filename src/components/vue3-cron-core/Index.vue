@@ -1,335 +1,3 @@
-<template>
-  <div class="v3c">
-    <ul class="v3c-tab">
-      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 1 }" @click="onHandleTab(1)">秒</li>
-      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 2 }" @click="onHandleTab(2)">分</li>
-      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 3 }" @click="onHandleTab(3)">时</li>
-      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 4 }" @click="onHandleTab(4)">日</li>
-      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 5 }" @click="onHandleTab(5)">月</li>
-      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 7 }" @click="onHandleTab(7)">周</li>
-      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 6 }" @click="onHandleTab(6)">年</li>
-    </ul>
-
-    <!-- 秒 -->
-    <div class="v3c-content" v-show="tabActive == 1">
-      <!-- 每一秒 -->
-      <el-form-item>
-        <el-radio v-model="state.second.cronEvery" label="1"> 每一秒钟 </el-radio>
-      </el-form-item>
-      <!-- 每隔多久 -->
-      <el-form-item>
-        <el-radio v-model="state.second.cronEvery" :label="2">
-          从
-          <el-input-number type="number" :min="0" :max="59" v-model="state.second.incrementStart" />
-          秒开始，每 <el-input-number type="number" :min="1" :max="60" v-model="state.second.incrementIncrement" />
-          秒执行一次
-        </el-radio>
-      </el-form-item>
-      <!-- 周期 -->
-      <el-form-item>
-        <el-radio v-model="state.second.cronEvery" :label="4">
-          周期从
-          <el-input-number type="number" v-model="state.second.rangeStart" :min="1" :max="60" />
-          -
-          <el-input-number type="number" v-model="state.second.rangeEnd" :min="0" :max="59" />
-          秒
-        </el-radio>
-      </el-form-item>
-      <!-- 具体秒数 -->
-      <el-form-item>
-        <el-radio v-model="state.second.cronEvery" :label="3">
-          指定
-          <el-select clearable v-model="state.second.specificSpecific" placeholder="可多选" multiple style="width: 100%">
-            <el-option v-for="item in 60" :key="item" :value="item - 1">{{ item - 1 }}</el-option>
-          </el-select>
-        </el-radio>
-      </el-form-item>
-    </div>
-    <!-- 分钟 -->
-    <div class="v3c-content" v-show="tabActive == 2">
-      <!-- 每一分 -->
-      <el-form-item>
-        <el-radio v-model="state.minute.cronEvery" label="1">分钟 允许的通配符[, - * /] </el-radio>
-      </el-form-item>
-
-      <!-- 每隔多久 -->
-      <el-form-item>
-        <el-radio v-model="state.minute.cronEvery" :label="2">
-          从
-          <el-input-number type="number" :min="0" :max="59" v-model="state.minute.incrementStart" />
-          分开始 每
-          <el-input-number type="number" :min="1" :max="60" v-model="state.minute.incrementIncrement" />
-          分执行一次
-        </el-radio>
-      </el-form-item>
-      <!-- 具体分钟数 -->
-      <el-form-item>
-        <el-radio v-model="state.minute.cronEvery" :label="4">
-          周期从
-          <el-input-number type="number" v-model="state.minute.rangeStart" :min="1" :max="60" />
-          -
-          <el-input-number type="number" v-model="state.minute.rangeEnd" :min="0" :max="59" />
-          分
-        </el-radio>
-      </el-form-item>
-      <!-- 具体分钟数 -->
-      <el-form-item>
-        <el-radio v-model="state.minute.cronEvery" :label="3">
-          指定
-          <el-select multiple v-model="state.minute.specificSpecific">
-            <el-option :value="index" v-for="(item, index) in 60" :key="index">{{ index }}</el-option>
-          </el-select>
-        </el-radio>
-      </el-form-item>
-    </div>
-    <!-- 3.小时 -->
-    <div class="v3c-content" v-show="tabActive == 3">
-      <!-- 每一小时 -->
-      <el-form-item>
-        <el-radio v-model="state.hour.cronEvery" label="1"> 小时 允许的通配符[, - * /]</el-radio>
-      </el-form-item>
-
-      <!-- 每隔多久小时 -->
-      <el-form-item>
-        <el-radio :label="2" v-model="state.hour.cronEvery">
-          从
-          <el-input-number type="number" :min="0" :max="59" v-model="state.hour.incrementStart" />
-          小时开始，每隔
-          <el-input-number type="number" :min="1" :max="60" v-model="state.hour.incrementIncrement" />
-          小时执行一次
-        </el-radio>
-      </el-form-item>
-
-      <!-- 周期 -->
-      <el-form-item>
-        <el-radio :label="4" v-model="state.hour.cronEvery">
-          周期从
-          <el-input-number type="number" v-model="state.hour.rangeStart" :min="1" :max="60" />
-          -
-          <el-input-number type="number" v-model="state.hour.rangeEnd" :min="0" :max="59" />
-          小时
-        </el-radio>
-      </el-form-item>
-      <!-- 具体小时数 -->
-      <el-form-item>
-        <el-radio :label="3" v-model="state.hour.cronEvery">
-          指定
-          <el-select multiple v-model="state.hour.specificSpecific">
-            <el-option :value="index" v-for="(item, index) in 60" :key="index">{{ index }}</el-option>
-          </el-select>
-        </el-radio>
-      </el-form-item>
-    </div>
-    <!-- 4.日 -->
-    <div class="v3c-content" v-show="tabActive == 4">
-      <!-- 1 -->
-      <el-form-item>
-        <el-radio label="1" v-model="state.day.cronEvery"> 每天 </el-radio>
-      </el-form-item>
-      <!-- 2 -->
-      <el-form-item>
-        <el-radio label="2" v-model="state.day.cronEvery"> 不指定 </el-radio>
-      </el-form-item>
-      <!-- 3 -->
-      <el-form-item>
-        <el-radio label="3" v-model="state.day.cronEvery">
-          周期从
-          <el-input-number v-model="state.day.cycle01" :min="1" :max="30" /> -
-          <el-input-number v-model="state.day.cycle02" :min="state.day.cycle01 ? state.day.cycle01 + 1 : 2" :max="31" /> 日
-        </el-radio>
-      </el-form-item>
-      <!-- 4 -->
-      <el-form-item>
-        <el-radio label="4" v-model="state.day.cronEvery">
-          从
-          <el-input-number v-model="state.day.incrementStart" :min="1" :max="30" /> 号开始，每
-          <el-input-number v-model="state.day.incrementIncrement" :min="1" :max="31 - state.day.incrementStart || 1" /> 日执行一次
-        </el-radio>
-      </el-form-item>
-      <!-- 5 -->
-      <el-form-item>
-        <el-radio label="5" v-model="state.day.cronEvery">
-          最近的工作日(周一至周五)至本月
-          <el-input-number v-model="state.day.cronDaysNearestWeekday" :min="1" :max="31" />
-          日
-        </el-radio>
-      </el-form-item>
-      <!-- 6 -->
-      <el-form-item>
-        <el-radio label="6" v-model="state.day.cronEvery"> 在这个月的最后一天 </el-radio>
-      </el-form-item>
-      <!-- 7 -->
-      <el-form-item>
-        <el-radio label="7" v-model="state.day.cronEvery">
-          指定
-          <el-select multiple v-model="state.day.specificSpecific">
-            <el-option v-for="(val, index) in 31" :key="index" :value="val">
-              {{ val }}
-            </el-option>
-          </el-select>
-        </el-radio>
-      </el-form-item>
-    </div>
-    <!-- 7.周 -->
-    <div class="v3c-content" v-show="tabActive == 7">
-      <!-- 1 -->
-      <el-form-item>
-        <el-radio v-model="state.week.cronEvery" label="1"> 每周 </el-radio>
-      </el-form-item>
-      <!-- 2 -->
-      <el-form-item>
-        <el-radio v-model="state.week.cronEvery" label="2"> 不指定 </el-radio>
-      </el-form-item>
-
-      <!-- 3 -->
-      <el-form-item>
-        <el-radio v-model="state.week.cronEvery" label="3">
-          周期从星期
-          <el-select clearable v-model="state.week.cycle01" style="width: 100px">
-            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key" :disabled="item.key === 1">{{ item.value }}</el-option>
-          </el-select>
-          -
-          <el-select clearable v-model="state.week.cycle02" style="width: 100px">
-            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key" :disabled="item.key < state.week.cycle01 && item.key !== 1">
-              {{ item.value }}
-            </el-option>
-          </el-select>
-        </el-radio>
-      </el-form-item>
-
-      <!-- 4 -->
-      <el-form-item>
-        <el-radio v-model="state.week.cronEvery" label="4">
-          第
-          <el-input-number v-model="state.week.average01" :min="1" :max="4" /> 周的星期
-          <el-select clearable v-model="state.week.average02" style="width: 100px">
-            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key">{{ item.value }}</el-option>
-          </el-select>
-        </el-radio>
-      </el-form-item>
-      <!-- 5 -->
-      <el-form-item>
-        <el-radio v-model="state.week.cronEvery" label="5">
-          本月最后一个星期
-          <el-select clearable v-model="state.week.weekday" style="width: 100px">
-            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key">{{ item.value }}</el-option>
-          </el-select>
-        </el-radio>
-      </el-form-item>
-      <!-- 6 -->
-      <el-form-item>
-        <el-radio v-model="state.week.cronEvery" label="6">
-          指定
-          <el-select clearable v-model="state.week.specificSpecific" placeholder="可多选" multiple style="width: 100%">
-            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="String(item.key)">{{ item.value }}</el-option>
-          </el-select>
-        </el-radio>
-      </el-form-item>
-    </div>
-    <!-- 5.月 -->
-    <div class="v3c-content" v-show="tabActive == 5">
-      <!-- 1 -->
-      <div>
-        <label for="month1">
-          <input type="radio" id="month1" value="1" v-model="state.month.cronEvery" />
-          月 允许的通配符[, - * /]
-        </label>
-      </div>
-      <!-- 2 -->
-      <div class="mt-20">
-        <label for="month2">
-          <input type="radio" id="month2" value="2" v-model="state.month.cronEvery" />
-          从
-          <el-input-number type="number" v-model="state.month.incrementStart" :min="1" :max="11" />
-          月开始，每隔
-          <el-input-number type="number" v-model="state.month.incrementIncrement" :min="1" :max="12 - state.month.incrementStart || 0" />
-          月月执行一次
-        </label>
-      </div>
-      <!-- 3 -->
-      <div class="mt-20">
-        <label for="month3">
-          <input type="radio" id="month3" value="3" v-model="state.month.cronEvery" />
-          指定
-          <el-select multiple v-model="state.month.specificSpecific">
-            <el-option v-for="(val, index) in 12" :key="index" :value="val">
-              {{ val }}
-            </el-option>
-          </el-select>
-        </label>
-      </div>
-      <!-- 4 -->
-      <div class="mt-20">
-        <label for="month4">
-          <input type="radio" id="month4" value="4" v-model="state.month.cronEvery" />
-          周期从
-          <el-input-number type="number" v-model="state.month.rangeStart" :min="1" :max="11" />
-          -
-          <el-input-number type="number" v-model="state.month.rangeEnd" :min="state.month.rangeStart ? state.month.rangeStart + 1 : 2" :max="12" />
-          月
-        </label>
-      </div>
-    </div>
-    <!-- 6.年 -->
-    <div class="v3c-content" v-show="tabActive == 6">
-      <!-- 1 -->
-      <div>
-        <label for="year1">
-          <input type="radio" id="year1" value="1" v-model="state.year.cronEvery" />
-          每年
-        </label>
-      </div>
-      <!-- 2 -->
-      <div class="mt-20">
-        <label for="year2">
-          <input type="radio" id="year2" value="2" v-model="state.year.cronEvery" />
-          从
-          <el-input-number type="number" v-model="state.year.incrementStart" :min="currYear" :max="currYear + 10" />
-          年开始，每
-          <el-input-number type="number" v-model="state.year.incrementIncrement" :min="1" :max="99" />
-          年执行一次
-        </label>
-      </div>
-      <!-- 4 -->
-      <div class="mt-20">
-        <label for="year3">
-          <input type="radio" id="year3" value="4" v-model="state.year.cronEvery" />
-          周期从
-          <el-input-number type="number" v-model="state.year.rangeStart" :min="currYear + 1" :max="currYear + 10" />
-          -
-          <el-input-number type="number" v-model="state.year.rangeEnd" :min="state.year.rangeStart ? state.year.rangeStart + 1 : currYear + 1" :max="currYear + 10" />
-        </label>
-      </div>
-      <!-- 3 -->
-      <div class="mt-20">
-        <label for="year3">
-          <input type="radio" id="year3" value="3" v-model="state.year.cronEvery" />
-          指定
-          <el-select multiple v-model="state.year.specificSpecific">
-            <el-option v-for="(val, index) in 100" :key="index" :value="currYear + val">
-              {{ currYear + val }}
-            </el-option>
-          </el-select>
-        </label>
-      </div>
-    </div>
-    <!-- 结果 -->
-    <div class="v3c-footer">
-      <fieldset>
-        <legend>Cron表达式</legend>
-        <span class="cron">{{ state.cron }}</span>
-      </fieldset>
-    </div>
-
-    <div class="v3c-footer">
-      <div>
-        <el-button size="small" type="primary" @click="handleChange">保存</el-button>
-        <el-button size="small" type="warning" @click="clearCron">重置</el-button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
 export default defineComponent({
   name: 'Vue3CronCore',
@@ -448,73 +116,73 @@ export default defineComponent({
       },
       secondsText: computed(() => {
         let seconds = ''
-        let cronEvery = state.second.cronEvery
+        const cronEvery = state.second.cronEvery
         switch (cronEvery.toString()) {
           case '1':
             seconds = '*'
             break
           case '2':
-            seconds = state.second.incrementStart + '/' + state.second.incrementIncrement
+            seconds = `${state.second.incrementStart}/${state.second.incrementIncrement}`
             break
           case '3':
             state.second.specificSpecific.map((val) => {
-              seconds += val + ','
+              seconds += `${val},`
             })
             seconds = seconds.slice(0, -1)
             break
           case '4':
-            seconds = state.second.rangeStart + '-' + state.second.rangeEnd
+            seconds = `${state.second.rangeStart}-${state.second.rangeEnd}`
             break
         }
         return seconds
       }),
       minutesText: computed(() => {
         let minutes = ''
-        let cronEvery = state.minute.cronEvery
+        const cronEvery = state.minute.cronEvery
         switch (cronEvery.toString()) {
           case '1':
             minutes = '*'
             break
           case '2':
-            minutes = state.minute.incrementStart + '/' + state.minute.incrementIncrement
+            minutes = `${state.minute.incrementStart}/${state.minute.incrementIncrement}`
             break
           case '3':
             state.minute.specificSpecific.map((val) => {
-              minutes += val + ','
+              minutes += `${val},`
             })
             minutes = minutes.slice(0, -1)
             break
           case '4':
-            minutes = state.minute.rangeStart + '-' + state.minute.rangeEnd
+            minutes = `${state.minute.rangeStart}-${state.minute.rangeEnd}`
             break
         }
         return minutes
       }),
       hoursText: computed(() => {
         let hours = ''
-        let cronEvery = state.hour.cronEvery
+        const cronEvery = state.hour.cronEvery
         switch (cronEvery.toString()) {
           case '1':
             hours = '*'
             break
           case '2':
-            hours = state.hour.incrementStart + '/' + state.hour.incrementIncrement
+            hours = `${state.hour.incrementStart}/${state.hour.incrementIncrement}`
             break
           case '3':
             state.hour.specificSpecific.map((val) => {
-              hours += val + ','
+              hours += `${val},`
             })
             hours = hours.slice(0, -1)
             break
           case '4':
-            hours = state.hour.rangeStart + '-' + state.hour.rangeEnd
+            hours = `${state.hour.rangeStart}-${state.hour.rangeEnd}`
             break
         }
         return hours
       }),
       daysText: computed(() => {
         let days = ''
-        let cronEvery = state.day.cronEvery
+        const cronEvery = state.day.cronEvery
         switch (cronEvery.toString()) {
           case '1':
             days = '*'
@@ -525,15 +193,15 @@ export default defineComponent({
           case '3':
             const cycle01 = checkNumber(state.day.cycle01, 1, 30)
             const cycle02 = checkNumber(state.day.cycle02, cycle01 ? cycle01 + 1 : 2, 31, 31)
-            days = cycle01 + '-' + cycle02
+            days = `${cycle01}-${cycle02}`
             break
           case '4':
             const average01 = checkNumber(state.day.incrementStart, 1, 30)
             const average02 = checkNumber(state.day.incrementIncrement, 1, 31 - average01 || 0)
-            days = average01 + '/' + average02
+            days = `${average01}/${average02}`
             break
           case '5':
-            days = state.day.cronDaysNearestWeekday + 'W'
+            days = `${state.day.cronDaysNearestWeekday}W`
             break
           case '6':
             days = 'L'
@@ -541,18 +209,18 @@ export default defineComponent({
           case '7':
             // days = 'LW'
             state.day.specificSpecific.map((val) => {
-              days += val + ','
+              days += `${val},`
             })
             days = days.slice(0, -1)
             break
           case '8':
-            days = state.day.cronLastSpecificDomDay + 'L'
+            days = `${state.day.cronLastSpecificDomDay}L`
             break
           case '9':
-            days = 'L-' + state.day.cronDaysBeforeEomMinus
+            days = `L-${state.day.cronDaysBeforeEomMinus}`
             break
           case '10':
-            days = state.day.cronDaysNearestWeekday + 'W'
+            days = `${state.day.cronDaysNearestWeekday}W`
             break
           case '12':
             days = '?'
@@ -562,7 +230,7 @@ export default defineComponent({
       }),
       weeksText: computed(() => {
         let weeks = ''
-        let cronEvery = state.week.cronEvery
+        const cronEvery = state.week.cronEvery
         if (cronEvery.toString() !== '2' && state.day.cronEvery !== '?') {
           // state.daysText = '?'
           // state.day.cronEvery = '2'
@@ -581,58 +249,58 @@ export default defineComponent({
             weeks = state.averageTotal
             break
           case '5':
-            weeks = state.week.weekday + 'L'
+            weeks = `${state.week.weekday}L`
             break
           case '6':
             state.week.specificSpecific.map((val) => {
-              weeks += val + ','
+              weeks += `${val},`
             })
             weeks = weeks.slice(0, -1)
             break
         }
-        console.log('weeks=' + weeks)
+        console.log(`weeks=${weeks}`)
         return weeks
       }),
       monthsText: computed(() => {
         let months = ''
-        let cronEvery = state.month.cronEvery
+        const cronEvery = state.month.cronEvery
         switch (cronEvery.toString()) {
           case '1':
             months = '*'
             break
           case '2':
-            months = state.month.incrementStart + '/' + state.month.incrementIncrement
+            months = `${state.month.incrementStart}/${state.month.incrementIncrement}`
             break
           case '3':
             state.month.specificSpecific.map((val) => {
-              months += val + ','
+              months += `${val},`
             })
             months = months.slice(0, -1)
             break
           case '4':
-            months = state.month.rangeStart + '-' + state.month.rangeEnd
+            months = `${state.month.rangeStart}-${state.month.rangeEnd}`
             break
         }
         return months
       }),
       yearsText: computed(() => {
         let years = ''
-        let cronEvery = state.year.cronEvery
+        const cronEvery = state.year.cronEvery
         switch (cronEvery.toString()) {
           case '1':
             years = '*'
             break
           case '2':
-            years = state.year.incrementStart + '/' + state.year.incrementIncrement
+            years = `${state.year.incrementStart}/${state.year.incrementIncrement}`
             break
           case '3':
             state.year.specificSpecific.map((val) => {
-              years += val + ','
+              years += `${val},`
             })
             years = years.slice(0, -1)
             break
           case '4':
-            years = state.year.rangeStart + '-' + state.year.rangeEnd
+            years = `${state.year.rangeStart}-${state.year.rangeEnd}`
             break
         }
         return years
@@ -653,11 +321,12 @@ export default defineComponent({
       averageTotal: computed(() => {
         state.week.average01 = checkNumber(state.week.average01, 1, 4)
         state.week.average02 = checkNumber(state.week.average02, 1, 7)
-        return state.week.average02 + '#' + state.week.average01
+        return `${state.week.average02}#${state.week.average01}`
       }),
     })
     const handleChange = () => {
-      if (typeof state.cron !== 'string') return false
+      if (typeof state.cron !== 'string')
+        return false
       emit('change', state.cron)
     }
     // 清空
@@ -674,11 +343,11 @@ export default defineComponent({
     const checkNumber = (value, minLimit, maxLimit) => {
       // 检查必须为整数
       value = Math.floor(value)
-      if (value < minLimit) {
+      if (value < minLimit)
         value = minLimit
-      } else if (value > maxLimit) {
+      else if (value > maxLimit)
         value = maxLimit
-      }
+
       return value
     }
     const tabActive = ref(1)
@@ -689,7 +358,8 @@ export default defineComponent({
     watch(
       () => state.cron,
       (value) => {
-        if (typeof state.cron !== 'string') return
+        if (typeof state.cron !== 'string')
+          return
         emit('update:value', value)
       },
     )
@@ -706,6 +376,386 @@ export default defineComponent({
   },
 })
 </script>
+
+<template>
+  <div class="v3c">
+    <ul class="v3c-tab">
+      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 1 }" @click="onHandleTab(1)">
+        秒
+      </li>
+      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 2 }" @click="onHandleTab(2)">
+        分
+      </li>
+      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 3 }" @click="onHandleTab(3)">
+        时
+      </li>
+      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 4 }" @click="onHandleTab(4)">
+        日
+      </li>
+      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 5 }" @click="onHandleTab(5)">
+        月
+      </li>
+      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 7 }" @click="onHandleTab(7)">
+        周
+      </li>
+      <li class="v3c-tab-item" :class="{ 'v3c-active': tabActive == 6 }" @click="onHandleTab(6)">
+        年
+      </li>
+    </ul>
+
+    <!-- 秒 -->
+    <div v-show="tabActive == 1" class="v3c-content">
+      <!-- 每一秒 -->
+      <el-form-item>
+        <el-radio v-model="state.second.cronEvery" label="1">
+          每一秒钟
+        </el-radio>
+      </el-form-item>
+      <!-- 每隔多久 -->
+      <el-form-item>
+        <el-radio v-model="state.second.cronEvery" :label="2">
+          从
+          <el-input-number v-model="state.second.incrementStart" type="number" :min="0" :max="59" />
+          秒开始，每 <el-input-number v-model="state.second.incrementIncrement" type="number" :min="1" :max="60" />
+          秒执行一次
+        </el-radio>
+      </el-form-item>
+      <!-- 周期 -->
+      <el-form-item>
+        <el-radio v-model="state.second.cronEvery" :label="4">
+          周期从
+          <el-input-number v-model="state.second.rangeStart" type="number" :min="1" :max="60" />
+          -
+          <el-input-number v-model="state.second.rangeEnd" type="number" :min="0" :max="59" />
+          秒
+        </el-radio>
+      </el-form-item>
+      <!-- 具体秒数 -->
+      <el-form-item>
+        <el-radio v-model="state.second.cronEvery" :label="3">
+          指定
+          <el-select v-model="state.second.specificSpecific" clearable placeholder="可多选" multiple style="width: 100%">
+            <el-option v-for="item in 60" :key="item" :value="item - 1">
+              {{ item - 1 }}
+            </el-option>
+          </el-select>
+        </el-radio>
+      </el-form-item>
+    </div>
+    <!-- 分钟 -->
+    <div v-show="tabActive == 2" class="v3c-content">
+      <!-- 每一分 -->
+      <el-form-item>
+        <el-radio v-model="state.minute.cronEvery" label="1">
+          分钟 允许的通配符[, - * /]
+        </el-radio>
+      </el-form-item>
+
+      <!-- 每隔多久 -->
+      <el-form-item>
+        <el-radio v-model="state.minute.cronEvery" :label="2">
+          从
+          <el-input-number v-model="state.minute.incrementStart" type="number" :min="0" :max="59" />
+          分开始 每
+          <el-input-number v-model="state.minute.incrementIncrement" type="number" :min="1" :max="60" />
+          分执行一次
+        </el-radio>
+      </el-form-item>
+      <!-- 具体分钟数 -->
+      <el-form-item>
+        <el-radio v-model="state.minute.cronEvery" :label="4">
+          周期从
+          <el-input-number v-model="state.minute.rangeStart" type="number" :min="1" :max="60" />
+          -
+          <el-input-number v-model="state.minute.rangeEnd" type="number" :min="0" :max="59" />
+          分
+        </el-radio>
+      </el-form-item>
+      <!-- 具体分钟数 -->
+      <el-form-item>
+        <el-radio v-model="state.minute.cronEvery" :label="3">
+          指定
+          <el-select v-model="state.minute.specificSpecific" multiple>
+            <el-option v-for="(item, index) in 60" :key="index" :value="index">
+              {{ index }}
+            </el-option>
+          </el-select>
+        </el-radio>
+      </el-form-item>
+    </div>
+    <!-- 3.小时 -->
+    <div v-show="tabActive == 3" class="v3c-content">
+      <!-- 每一小时 -->
+      <el-form-item>
+        <el-radio v-model="state.hour.cronEvery" label="1">
+          小时 允许的通配符[, - * /]
+        </el-radio>
+      </el-form-item>
+
+      <!-- 每隔多久小时 -->
+      <el-form-item>
+        <el-radio v-model="state.hour.cronEvery" :label="2">
+          从
+          <el-input-number v-model="state.hour.incrementStart" type="number" :min="0" :max="59" />
+          小时开始，每隔
+          <el-input-number v-model="state.hour.incrementIncrement" type="number" :min="1" :max="60" />
+          小时执行一次
+        </el-radio>
+      </el-form-item>
+
+      <!-- 周期 -->
+      <el-form-item>
+        <el-radio v-model="state.hour.cronEvery" :label="4">
+          周期从
+          <el-input-number v-model="state.hour.rangeStart" type="number" :min="1" :max="60" />
+          -
+          <el-input-number v-model="state.hour.rangeEnd" type="number" :min="0" :max="59" />
+          小时
+        </el-radio>
+      </el-form-item>
+      <!-- 具体小时数 -->
+      <el-form-item>
+        <el-radio v-model="state.hour.cronEvery" :label="3">
+          指定
+          <el-select v-model="state.hour.specificSpecific" multiple>
+            <el-option v-for="(item, index) in 60" :key="index" :value="index">
+              {{ index }}
+            </el-option>
+          </el-select>
+        </el-radio>
+      </el-form-item>
+    </div>
+    <!-- 4.日 -->
+    <div v-show="tabActive == 4" class="v3c-content">
+      <!-- 1 -->
+      <el-form-item>
+        <el-radio v-model="state.day.cronEvery" label="1">
+          每天
+        </el-radio>
+      </el-form-item>
+      <!-- 2 -->
+      <el-form-item>
+        <el-radio v-model="state.day.cronEvery" label="2">
+          不指定
+        </el-radio>
+      </el-form-item>
+      <!-- 3 -->
+      <el-form-item>
+        <el-radio v-model="state.day.cronEvery" label="3">
+          周期从
+          <el-input-number v-model="state.day.cycle01" :min="1" :max="30" /> -
+          <el-input-number v-model="state.day.cycle02" :min="state.day.cycle01 ? state.day.cycle01 + 1 : 2" :max="31" /> 日
+        </el-radio>
+      </el-form-item>
+      <!-- 4 -->
+      <el-form-item>
+        <el-radio v-model="state.day.cronEvery" label="4">
+          从
+          <el-input-number v-model="state.day.incrementStart" :min="1" :max="30" /> 号开始，每
+          <el-input-number v-model="state.day.incrementIncrement" :min="1" :max="31 - state.day.incrementStart || 1" /> 日执行一次
+        </el-radio>
+      </el-form-item>
+      <!-- 5 -->
+      <el-form-item>
+        <el-radio v-model="state.day.cronEvery" label="5">
+          最近的工作日(周一至周五)至本月
+          <el-input-number v-model="state.day.cronDaysNearestWeekday" :min="1" :max="31" />
+          日
+        </el-radio>
+      </el-form-item>
+      <!-- 6 -->
+      <el-form-item>
+        <el-radio v-model="state.day.cronEvery" label="6">
+          在这个月的最后一天
+        </el-radio>
+      </el-form-item>
+      <!-- 7 -->
+      <el-form-item>
+        <el-radio v-model="state.day.cronEvery" label="7">
+          指定
+          <el-select v-model="state.day.specificSpecific" multiple>
+            <el-option v-for="(val, index) in 31" :key="index" :value="val">
+              {{ val }}
+            </el-option>
+          </el-select>
+        </el-radio>
+      </el-form-item>
+    </div>
+    <!-- 7.周 -->
+    <div v-show="tabActive == 7" class="v3c-content">
+      <!-- 1 -->
+      <el-form-item>
+        <el-radio v-model="state.week.cronEvery" label="1">
+          每周
+        </el-radio>
+      </el-form-item>
+      <!-- 2 -->
+      <el-form-item>
+        <el-radio v-model="state.week.cronEvery" label="2">
+          不指定
+        </el-radio>
+      </el-form-item>
+
+      <!-- 3 -->
+      <el-form-item>
+        <el-radio v-model="state.week.cronEvery" label="3">
+          周期从星期
+          <el-select v-model="state.week.cycle01" clearable style="width: 100px">
+            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key" :disabled="item.key === 1">
+              {{ item.value }}
+            </el-option>
+          </el-select>
+          -
+          <el-select v-model="state.week.cycle02" clearable style="width: 100px">
+            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key" :disabled="item.key < state.week.cycle01 && item.key !== 1">
+              {{ item.value }}
+            </el-option>
+          </el-select>
+        </el-radio>
+      </el-form-item>
+
+      <!-- 4 -->
+      <el-form-item>
+        <el-radio v-model="state.week.cronEvery" label="4">
+          第
+          <el-input-number v-model="state.week.average01" :min="1" :max="4" /> 周的星期
+          <el-select v-model="state.week.average02" clearable style="width: 100px">
+            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key">
+              {{ item.value }}
+            </el-option>
+          </el-select>
+        </el-radio>
+      </el-form-item>
+      <!-- 5 -->
+      <el-form-item>
+        <el-radio v-model="state.week.cronEvery" label="5">
+          本月最后一个星期
+          <el-select v-model="state.week.weekday" clearable style="width: 100px">
+            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="item.key">
+              {{ item.value }}
+            </el-option>
+          </el-select>
+        </el-radio>
+      </el-form-item>
+      <!-- 6 -->
+      <el-form-item>
+        <el-radio v-model="state.week.cronEvery" label="6">
+          指定
+          <el-select v-model="state.week.specificSpecific" clearable placeholder="可多选" multiple style="width: 100%">
+            <el-option v-for="(item, index) of weekList" :key="index" :label="item.value" :value="String(item.key)">
+              {{ item.value }}
+            </el-option>
+          </el-select>
+        </el-radio>
+      </el-form-item>
+    </div>
+    <!-- 5.月 -->
+    <div v-show="tabActive == 5" class="v3c-content">
+      <!-- 1 -->
+      <div>
+        <label for="month1">
+          <input id="month1" v-model="state.month.cronEvery" type="radio" value="1">
+          月 允许的通配符[, - * /]
+        </label>
+      </div>
+      <!-- 2 -->
+      <div class="mt-20">
+        <label for="month2">
+          <input id="month2" v-model="state.month.cronEvery" type="radio" value="2">
+          从
+          <el-input-number v-model="state.month.incrementStart" type="number" :min="1" :max="11" />
+          月开始，每隔
+          <el-input-number v-model="state.month.incrementIncrement" type="number" :min="1" :max="12 - state.month.incrementStart || 0" />
+          月月执行一次
+        </label>
+      </div>
+      <!-- 3 -->
+      <div class="mt-20">
+        <label for="month3">
+          <input id="month3" v-model="state.month.cronEvery" type="radio" value="3">
+          指定
+          <el-select v-model="state.month.specificSpecific" multiple>
+            <el-option v-for="(val, index) in 12" :key="index" :value="val">
+              {{ val }}
+            </el-option>
+          </el-select>
+        </label>
+      </div>
+      <!-- 4 -->
+      <div class="mt-20">
+        <label for="month4">
+          <input id="month4" v-model="state.month.cronEvery" type="radio" value="4">
+          周期从
+          <el-input-number v-model="state.month.rangeStart" type="number" :min="1" :max="11" />
+          -
+          <el-input-number v-model="state.month.rangeEnd" type="number" :min="state.month.rangeStart ? state.month.rangeStart + 1 : 2" :max="12" />
+          月
+        </label>
+      </div>
+    </div>
+    <!-- 6.年 -->
+    <div v-show="tabActive == 6" class="v3c-content">
+      <!-- 1 -->
+      <div>
+        <label for="year1">
+          <input id="year1" v-model="state.year.cronEvery" type="radio" value="1">
+          每年
+        </label>
+      </div>
+      <!-- 2 -->
+      <div class="mt-20">
+        <label for="year2">
+          <input id="year2" v-model="state.year.cronEvery" type="radio" value="2">
+          从
+          <el-input-number v-model="state.year.incrementStart" type="number" :min="currYear" :max="currYear + 10" />
+          年开始，每
+          <el-input-number v-model="state.year.incrementIncrement" type="number" :min="1" :max="99" />
+          年执行一次
+        </label>
+      </div>
+      <!-- 4 -->
+      <div class="mt-20">
+        <label for="year3">
+          <input id="year3" v-model="state.year.cronEvery" type="radio" value="4">
+          周期从
+          <el-input-number v-model="state.year.rangeStart" type="number" :min="currYear + 1" :max="currYear + 10" />
+          -
+          <el-input-number v-model="state.year.rangeEnd" type="number" :min="state.year.rangeStart ? state.year.rangeStart + 1 : currYear + 1" :max="currYear + 10" />
+        </label>
+      </div>
+      <!-- 3 -->
+      <div class="mt-20">
+        <label for="year3">
+          <input id="year3" v-model="state.year.cronEvery" type="radio" value="3">
+          指定
+          <el-select v-model="state.year.specificSpecific" multiple>
+            <el-option v-for="(val, index) in 100" :key="index" :value="currYear + val">
+              {{ currYear + val }}
+            </el-option>
+          </el-select>
+        </label>
+      </div>
+    </div>
+    <!-- 结果 -->
+    <div class="v3c-footer">
+      <fieldset>
+        <legend>Cron表达式</legend>
+        <span class="cron">{{ state.cron }}</span>
+      </fieldset>
+    </div>
+
+    <div class="v3c-footer">
+      <div>
+        <el-button size="small" type="primary" @click="handleChange">
+          保存
+        </el-button>
+        <el-button size="small" type="warning" @click="clearCron">
+          重置
+        </el-button>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style lang="css" scoped>
 .v3c {

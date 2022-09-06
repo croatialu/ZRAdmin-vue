@@ -8,6 +8,7 @@
     自行集成
   </div>
 </template>
+
 <style>
 a {
   color: aquamarine;

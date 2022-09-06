@@ -1,11 +1,6 @@
 import { createI18n } from 'vue-i18n'
 // import useAppStore from '@/store/modules/app'
-import { listLangByLocale } from '@/api/system/commonLang'
 import jsCookie from 'js-cookie'
-const language = computed(() => {
-  // return useAppStore().lang
-  return jsCookie.get('lang') || 'zh-cn'
-})
 
 import zhCn from './lang/zh-cn.json'
 import en from './lang/en.json'
@@ -19,40 +14,44 @@ import pageLoginTw from './pages/login/zh-tw.json'
 import pagemenuCn from './pages/menu/zh-cn'
 import pagemenuEn from './pages/menu/en'
 import pagemenuTw from './pages/menu/zh-tw'
+import { listLangByLocale } from '@/api/system/commonLang'
+const language = computed(() => {
+  // return useAppStore().lang
+  return jsCookie.get('lang') || 'zh-cn'
+})
 
 const i18n = createI18n({
   // 全局注入 $t 函数
   globalInjection: true,
   fallbackLocale: 'zh-cn',
-  locale: language.value, //默认选择的语言 
+  locale: language.value, // 默认选择的语言
   legacy: false, // 使用 Composition API 模式，则需要将其设置为false
   messages: {
     'zh-cn': {
       ...zhCn,
       ...pageLoginCn,
-      ...pagemenuCn
+      ...pagemenuCn,
     },
     'zh-tw': {
       ...zhTw,
       ...pageLoginTw,
-      ...pagemenuTw
+      ...pagemenuTw,
     },
     'en': {
       ...en,
       ...pageLoginEn,
-      ...pagemenuEn
+      ...pagemenuEn,
     },
-    //... 在这里添加其他语言支持
-  }
+    // ... 在这里添加其他语言支持
+  },
 })
 
 const loadLocale = () => {
-  listLangByLocale(language.value).then(res => {
+  listLangByLocale(language.value).then((res) => {
     const { code, data } = res
-    if (code == 200) {
+    if (code == 200)
       i18n.global.mergeLocaleMessage(language.value, data)
-    }
   })
 }
 loadLocale()
-export default i18n;
+export default i18n

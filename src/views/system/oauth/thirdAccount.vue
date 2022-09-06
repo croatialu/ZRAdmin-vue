@@ -6,157 +6,14 @@
  * @LastEditors: (zz)
  * @LastEditTime: (2022-06-23)
 -->
-<template>
-  <div>
-    <el-form :model="queryParams" label-position="right" inline ref="queryRef" v-show="showSearch" @submit.prevent>
-      <el-form-item label="用户id" prop="userId">
-        <el-input v-model.number="queryParams.userId" placeholder="请输入用户id" />
-      </el-form-item>
-      <el-form-item label="三方唯一id" prop="thirdUniqueAcount">
-        <el-input v-model="queryParams.thirdUniqueAcount" placeholder="请输入三方唯一id" />
-      </el-form-item>
-      <!-- <el-form-item label="账号类型" prop="accountType">
-        <el-select v-model="queryParams.accountType" placeholder="请选择账号类型">
-          <el-option v-for="item in options.accountTypeOptions" :key="item.dictValue" :label="item.dictLabel" :value="item.dictValue"></el-option>
-        </el-select>
-      </el-form-item> -->
-      <el-form-item label="添加时间">
-        <el-date-picker
-          v-model="dateRangeAddTime"
-          style="width: 240px"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          placeholder="请选择添加时间"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          :shortcuts="dateOptions">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item>
-        <el-button icon="search" type="primary" @click="handleQuery">{{ $t('btn.search') }}</el-button>
-        <el-button icon="refresh" @click="resetQuery">{{ $t('btn.reset') }}</el-button>
-      </el-form-item>
-    </el-form>
-    <!-- 工具区域 -->
-    <el-row :gutter="10" class="mb8">
-      <!-- <el-col :span="1.5">
-        <el-button type="primary" v-hasPermi="['system:thirdaccount:add']" plain icon="plus" @click="handleAdd">
-          {{ $t('btn.add') }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="success" :disabled="single" v-hasPermi="['system:thirdaccount:edit']" plain icon="edit" @click="handleUpdate">
-          {{ $t('btn.edit') }}
-        </el-button>
-      </el-col> -->
-      <el-col :span="1.5">
-        <el-button type="danger" :disabled="multiple" v-hasPermi="['system:thirdaccount:delete']" plain icon="delete" @click="handleDelete">
-          {{ $t('btn.delete') }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="warning" plain icon="download" @click="handleExport" v-hasPermi="['system:thirdaccount:export']">
-          {{ $t('btn.export') }}
-        </el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <!-- 数据区域 -->
-    <el-table
-      :data="dataList"
-      v-loading="loading"
-      ref="table"
-      border
-      highlight-current-row
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="50" align="center" />
-
-      <el-table-column prop="id" label="id" align="center" sortable />
-      <el-table-column prop="userId" label="用户id" align="center" />
-      <el-table-column prop="user.nickName" label="昵称" align="center" :show-overflow-tooltip="true" />
-      <el-table-column prop="thirdUniqueAcount" label="三方唯一id" align="center" :show-overflow-tooltip="true" />
-      <el-table-column prop="accountType" label="账号类型" align="center"> </el-table-column>
-      <el-table-column prop="addTime" label="添加时间" align="center" :show-overflow-tooltip="true" />
-      <el-table-column label="操作" align="center" width="160">
-        <template #default="scope">
-          <!-- <el-button v-hasPermi="['system:thirdaccount:edit']" type="success" icon="edit" title="编辑" @click="handleUpdate(scope.row)"></el-button> -->
-          <el-button
-            v-hasPermi="['system:thirdaccount:delete']"
-            type="danger"
-            icon="delete"
-            title="删除"
-            @click="handleDelete(scope.row)"></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination
-      class="mt10"
-      background
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList" />
-
-    <!-- 添加或修改三方账号绑定对话框 -->
-    <el-dialog :title="title" :lock-scroll="false" v-model="open">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-row :gutter="20">
-          <el-col :lg="24">
-            <el-form-item label="id" prop="id">
-              <el-input-number v-model.number="form.id" controls-position="right" placeholder="请输入id" :disabled="title == '修改数据'" />
-            </el-form-item>
-          </el-col>
-
-          <el-col :lg="24">
-            <el-form-item label="用户id" prop="userId">
-              <el-input v-model="form.userId" placeholder="请输入用户id" />
-            </el-form-item>
-          </el-col>
-
-          <el-col :lg="24">
-            <el-form-item label="三方唯一id" prop="thirdUniqueAcount">
-              <el-input v-model="form.thirdUniqueAcount" placeholder="请输入三方唯一id" />
-            </el-form-item>
-          </el-col>
-
-          <el-col :lg="24">
-            <el-form-item label="账号类型" prop="accountType">
-              <el-select v-model="form.accountType" placeholder="请选择账号类型">
-                <el-option
-                  v-for="item in options.accountTypeOptions"
-                  :key="item.dictValue"
-                  :label="item.dictLabel"
-                  :value="item.dictValue"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col :lg="24">
-            <el-form-item label="添加时间" prop="addTime">
-              <el-date-picker v-model="form.addTime" type="datetime" :teleported="false" placeholder="选择日期时间"></el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer v-if="opertype != 3">
-        <el-button text @click="cancel">{{ $t('btn.cancel') }}</el-button>
-        <el-button type="primary" @click="submitForm">{{ $t('btn.submit') }}</el-button>
-      </template>
-    </el-dialog>
-  </div>
-</template>
-
 <script setup name="thirdaccount">
 import {
-  listThirdAccount,
   addThirdAccount,
   delThirdAccount,
-  updateThirdAccount,
-  getThirdAccount,
   exportThirdAccount,
+  getThirdAccount,
+  listThirdAccount,
+  updateThirdAccount,
 } from '@/api/system/thirdaccount.js'
 
 const { proxy } = getCurrentInstance()
@@ -205,7 +62,7 @@ const formRef = ref()
 // 添加时间时间范围
 const dateRangeAddTime = ref([])
 
-var dictParams = []
+const dictParams = []
 
 function getList() {
   proxy.addDateRange(queryParams, proxy.dateRangeAddTime, 'AddTime')
@@ -256,8 +113,8 @@ function handleDelete(row) {
   const Ids = row.id || ids.value
 
   proxy
-    .$confirm('是否确认删除参数编号为"' + Ids + '"的数据项？')
-    .then(function () {
+    .$confirm(`是否确认删除参数编号为"${Ids}"的数据项？`)
+    .then(() => {
       return delThirdAccount(Ids)
     })
     .then(() => {
@@ -287,7 +144,7 @@ function handleUpdate(row) {
 
 // 表单提交
 function submitForm() {
-  proxy.$refs['formRef'].validate((valid) => {
+  proxy.$refs.formRef.validate((valid) => {
     if (valid) {
       if (form.value.id != undefined && opertype.value === 2) {
         updateThirdAccount(form.value)
@@ -297,7 +154,8 @@ function submitForm() {
             getList()
           })
           .catch(() => {})
-      } else {
+      }
+      else {
         addThirdAccount(form.value)
           .then((res) => {
             proxy.$modal.msgSuccess('新增成功')
@@ -305,7 +163,7 @@ function submitForm() {
             getList()
           })
           .catch((err) => {
-            //TODO 错误逻辑
+            // TODO 错误逻辑
           })
       }
     }
@@ -327,7 +185,7 @@ function handleExport() {
       cancelButtonText: '取消',
       type: 'warning',
     })
-    .then(function () {
+    .then(() => {
       return exportThirdAccount(queryParams)
     })
     .then((response) => {
@@ -336,7 +194,7 @@ function handleExport() {
 }
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.id)
+  ids.value = selection.map(item => item.id)
   single.value = selection.length != 1
   multiple.value = !selection.length
 }
@@ -346,7 +204,8 @@ function sortChange(column) {
   if (column.prop == null || column.order == null) {
     queryParams.sort = undefined
     queryParams.sortType = undefined
-  } else {
+  }
+  else {
     queryParams.sort = column.prop
     queryParams.sortType = column.order
   }
@@ -356,3 +215,158 @@ function sortChange(column) {
 
 handleQuery()
 </script>
+
+<template>
+  <div>
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-position="right" inline @submit.prevent>
+      <el-form-item label="用户id" prop="userId">
+        <el-input v-model.number="queryParams.userId" placeholder="请输入用户id" />
+      </el-form-item>
+      <el-form-item label="三方唯一id" prop="thirdUniqueAcount">
+        <el-input v-model="queryParams.thirdUniqueAcount" placeholder="请输入三方唯一id" />
+      </el-form-item>
+      <!-- <el-form-item label="账号类型" prop="accountType">
+        <el-select v-model="queryParams.accountType" placeholder="请选择账号类型">
+          <el-option v-for="item in options.accountTypeOptions" :key="item.dictValue" :label="item.dictLabel" :value="item.dictValue"></el-option>
+        </el-select>
+      </el-form-item> -->
+      <el-form-item label="添加时间">
+        <el-date-picker
+          v-model="dateRangeAddTime"
+          style="width: 240px"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          placeholder="请选择添加时间"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          :shortcuts="dateOptions"
+        />
+      </el-form-item>
+      <el-form-item>
+        <el-button icon="search" type="primary" @click="handleQuery">
+          {{ $t('btn.search') }}
+        </el-button>
+        <el-button icon="refresh" @click="resetQuery">
+          {{ $t('btn.reset') }}
+        </el-button>
+      </el-form-item>
+    </el-form>
+    <!-- 工具区域 -->
+    <el-row :gutter="10" class="mb8">
+      <!-- <el-col :span="1.5">
+        <el-button type="primary" v-hasPermi="['system:thirdaccount:add']" plain icon="plus" @click="handleAdd">
+          {{ $t('btn.add') }}
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button type="success" :disabled="single" v-hasPermi="['system:thirdaccount:edit']" plain icon="edit" @click="handleUpdate">
+          {{ $t('btn.edit') }}
+        </el-button>
+      </el-col> -->
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['system:thirdaccount:delete']" type="danger" :disabled="multiple" plain icon="delete" @click="handleDelete">
+          {{ $t('btn.delete') }}
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['system:thirdaccount:export']" type="warning" plain icon="download" @click="handleExport">
+          {{ $t('btn.export') }}
+        </el-button>
+      </el-col>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
+    </el-row>
+
+    <!-- 数据区域 -->
+    <el-table
+      ref="table"
+      v-loading="loading"
+      :data="dataList"
+      border
+      highlight-current-row
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="50" align="center" />
+
+      <el-table-column prop="id" label="id" align="center" sortable />
+      <el-table-column prop="userId" label="用户id" align="center" />
+      <el-table-column prop="user.nickName" label="昵称" align="center" :show-overflow-tooltip="true" />
+      <el-table-column prop="thirdUniqueAcount" label="三方唯一id" align="center" :show-overflow-tooltip="true" />
+      <el-table-column prop="accountType" label="账号类型" align="center" />
+      <el-table-column prop="addTime" label="添加时间" align="center" :show-overflow-tooltip="true" />
+      <el-table-column label="操作" align="center" width="160">
+        <template #default="scope">
+          <!-- <el-button v-hasPermi="['system:thirdaccount:edit']" type="success" icon="edit" title="编辑" @click="handleUpdate(scope.row)"></el-button> -->
+          <el-button
+            v-hasPermi="['system:thirdaccount:delete']"
+            type="danger"
+            icon="delete"
+            title="删除"
+            @click="handleDelete(scope.row)"
+          />
+        </template>
+      </el-table-column>
+    </el-table>
+    <pagination
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      class="mt10"
+      background
+      :total="total"
+      @pagination="getList"
+    />
+
+    <!-- 添加或修改三方账号绑定对话框 -->
+    <el-dialog v-model="open" :title="title" :lock-scroll="false">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+        <el-row :gutter="20">
+          <el-col :lg="24">
+            <el-form-item label="id" prop="id">
+              <el-input-number v-model.number="form.id" controls-position="right" placeholder="请输入id" :disabled="title == '修改数据'" />
+            </el-form-item>
+          </el-col>
+
+          <el-col :lg="24">
+            <el-form-item label="用户id" prop="userId">
+              <el-input v-model="form.userId" placeholder="请输入用户id" />
+            </el-form-item>
+          </el-col>
+
+          <el-col :lg="24">
+            <el-form-item label="三方唯一id" prop="thirdUniqueAcount">
+              <el-input v-model="form.thirdUniqueAcount" placeholder="请输入三方唯一id" />
+            </el-form-item>
+          </el-col>
+
+          <el-col :lg="24">
+            <el-form-item label="账号类型" prop="accountType">
+              <el-select v-model="form.accountType" placeholder="请选择账号类型">
+                <el-option
+                  v-for="item in options.accountTypeOptions"
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictValue"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :lg="24">
+            <el-form-item label="添加时间" prop="addTime">
+              <el-date-picker v-model="form.addTime" type="datetime" :teleported="false" placeholder="选择日期时间" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <template v-if="opertype != 3" #footer>
+        <el-button text @click="cancel">
+          {{ $t('btn.cancel') }}
+        </el-button>
+        <el-button type="primary" @click="submitForm">
+          {{ $t('btn.submit') }}
+        </el-button>
+      </template>
+    </el-dialog>
+  </div>
+</template>

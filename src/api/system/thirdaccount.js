@@ -12,7 +12,6 @@ export function listThirdAccount(query) {
   })
 }
 
-
 /**
 * 新增三方账号绑定
 * @param data
@@ -21,7 +20,7 @@ export function addThirdAccount(data) {
   return request({
     url: 'system/ThirdAccount',
     method: 'post',
-    data: data,
+    data,
   })
 }
 
@@ -33,7 +32,7 @@ export function updateThirdAccount(data) {
   return request({
     url: 'system/ThirdAccount',
     method: 'PUT',
-    data: data,
+    data,
   })
 }
 
@@ -43,8 +42,8 @@ export function updateThirdAccount(data) {
 */
 export function getThirdAccount(id) {
   return request({
-    url: 'system/ThirdAccount/' + id,
-    method: 'get'
+    url: `system/ThirdAccount/${id}`,
+    method: 'get',
   })
 }
 
@@ -54,8 +53,8 @@ export function getThirdAccount(id) {
 */
 export function delThirdAccount(pid) {
   return request({
-    url: 'system/ThirdAccount/' + pid,
-    method: 'delete'
+    url: `system/ThirdAccount/${pid}`,
+    method: 'delete',
   })
 }
 
@@ -64,7 +63,7 @@ export function exportThirdAccount(query) {
   return request({
     url: 'system/ThirdAccount/export',
     method: 'get',
-    params: query
+    params: query,
   })
 }
 

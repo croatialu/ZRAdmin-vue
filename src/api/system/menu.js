@@ -5,20 +5,20 @@ export function listMenu(query) {
   return request({
     url: '/system/menu/list',
     method: 'get',
-    params: query
+    params: query,
   })
 }
 // 查询菜单列表
 export function listMenuById(menuId) {
   return request({
-    url: '/system/menu/list/' + menuId,
+    url: `/system/menu/list/${menuId}`,
     method: 'get',
   })
 }
 // 查询菜单详细
 export function getMenu(menuId) {
   return request({
-    url: '/system/menu/' + menuId,
+    url: `/system/menu/${menuId}`,
     method: 'get',
   })
 }
@@ -27,14 +27,14 @@ export function getMenu(menuId) {
 export function treeselect() {
   return request({
     url: '/system/Menu/treeSelect',
-    method: 'get'
+    method: 'get',
   })
 }
 
 // 根据角色ID查询菜单下拉树结构
 export function roleMenuTreeselect(roleId) {
   return request({
-    url: '/system/menu/roleMenuTreeselect/' + roleId,
+    url: `/system/menu/roleMenuTreeselect/${roleId}`,
     method: 'get',
   })
 }
@@ -44,7 +44,7 @@ export const addMenu = (data) => {
   return request({
     url: '/system/menu/add',
     method: 'put',
-    data: data,
+    data,
   })
 }
 
@@ -53,24 +53,24 @@ export function updateMenu(data) {
   return request({
     url: '/system/Menu/edit',
     method: 'post',
-    data: data
+    data,
   })
 }
 
 // 删除菜单
 export function delMenu(menuId) {
   return request({
-    url: '/system/Menu/' + menuId,
-    method: 'delete'
+    url: `/system/Menu/${menuId}`,
+    method: 'delete',
   })
 }
 
-//排序
+// 排序
 export function changeMenuSort(data) {
   return request({
     url: '/system/Menu/ChangeSort',
     method: 'GET',
-    params: data
+    params: data,
   })
 }
 
@@ -79,6 +79,6 @@ export const getRouters = (query) => {
   return request({
     url: '/getRouters',
     method: 'get',
-    params: query
+    params: query,
   })
 }

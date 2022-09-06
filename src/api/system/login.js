@@ -6,12 +6,12 @@ export function login(username, password, code, uuid) {
     username,
     password,
     code,
-    uuid
+    uuid,
   }
   return request({
     url: '/login',
     method: 'POST',
-    data: data,
+    data,
   })
 }
 
@@ -19,7 +19,7 @@ export function login(username, password, code, uuid) {
 export function getInfo() {
   return request({
     url: '/getInfo',
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -27,7 +27,7 @@ export function getInfo() {
 export function logout() {
   return request({
     url: '/LogOut',
-    method: 'POST'
+    method: 'POST',
   })
 }
 
@@ -35,32 +35,32 @@ export function logout() {
 export function getCodeImg() {
   return request({
     url: '/captchaImage',
-    method: 'get'
+    method: 'get',
   })
 }
 /**
  * 注册
- * @returns 
+ * @returns
  */
 export function register(data) {
   return request({
     url: '/register',
     method: 'post',
-    data: data
+    data,
   })
 }
 
 /**
  * 三方授权回调
- * @param {*} data 
+ * @param {*} data
  * @param {*} params
- * @returns 
+ * @returns
  */
 export function oauthCallback(data, params) {
   return request({
     url: '/auth/callback',
     method: 'post',
-    data: data,
-    params: params
+    data,
+    params,
   })
 }

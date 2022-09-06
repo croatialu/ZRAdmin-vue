@@ -19,5 +19,5 @@ export default {
     permissionStr: '权限字符',
     isCache: '是否缓存',
     menuNameKey: '菜单名(key)',
-  }
+  },
 }

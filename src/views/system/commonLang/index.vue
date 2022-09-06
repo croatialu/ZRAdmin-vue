@@ -6,173 +6,8 @@
  * @LastEditors: (zr)
  * @LastEditTime: (2022-5-14)
 -->
-<template>
-  <div class="app-container">
-    <!-- :model属性用于表单验证使用 比如下面的el-form-item 的 prop属性用于对表单值进行验证操作 -->
-    <el-form :model="queryParams" label-position="right" inline ref="queryRef" v-show="showSearch" @submit.prevent>
-      <el-form-item :label="$t('language')" prop="langCode">
-        <el-select v-model="queryParams.langCode" placeholder="请选择语言code">
-          <el-option v-for="item in options.sys_lang_type" :key="item.dictValue" :label="item.dictLabel" :value="item.dictValue"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item :label="$t('languageKey')" prop="langKey">
-        <el-input v-model="queryParams.langKey" placeholder="请输入语言key" />
-      </el-form-item>
-      <el-form-item :label="$t('showWay')">
-        <el-radio-group v-model="queryParams.showMode">
-          <el-radio-button label="1">表格</el-radio-button>
-          <el-radio-button label="2">行列</el-radio-button>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item :label="$t('common.addTime')">
-        <el-date-picker
-          v-model="dateRangeAddtime"
-          style="width: 240px"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          placeholder="请选择添加时间"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          :shortcuts="dateOptions">
-        </el-date-picker>
-      </el-form-item>
-
-      <el-form-item>
-        <el-button icon="search" type="primary" @click="handleQuery">{{ $t('btn.search') }}</el-button>
-        <el-button icon="refresh" @click="resetQuery">{{ $t('btn.reset') }}</el-button>
-      </el-form-item>
-    </el-form>
-    <!-- 工具区域 -->
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button type="primary" v-hasPermi="['system:lang:add']" plain icon="plus" @click="handleAdd">{{ $t('btn.add') }}</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="success" :disabled="single" v-hasPermi="['system:lang:edit']" plain icon="edit" @click="handleUpdate">
-          {{ $t('btn.edit') }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="danger" :disabled="multiple" v-hasPermi="['system:lang:delete']" plain icon="delete" @click="handleDelete">
-          {{ $t('btn.delete') }}
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button type="warning" plain icon="download" @click="handleExport" v-hasPermi="['system:lang:export']">{{ $t('btn.export') }}</el-button>
-      </el-col>
-      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
-    <!-- 数据区域 -->
-    <el-table
-      v-if="queryParams.showMode == 1"
-      :data="dataList"
-      v-loading="loading"
-      ref="table"
-      border
-      highlight-current-row
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="50" align="center" />
-
-      <el-table-column prop="id" label="id" align="center" />
-      <el-table-column prop="langCode" :label="$t('language')" align="center">
-        <template #default="scope">
-          <dict-tag :options="sys_lang_type" :value="scope.row.langCode" />
-        </template>
-      </el-table-column>
-      <el-table-column prop="langKey" :label="$t('languageKey')" align="center" :show-overflow-tooltip="true" />
-      <el-table-column prop="langName" :label="$t('common.content')" align="center" :show-overflow-tooltip="true" />
-      <el-table-column prop="addtime" :label="$t('common.addTime')" align="center" :show-overflow-tooltip="true" />
-
-      <el-table-column :label="$t('btn.operate')" align="center" width="140">
-        <template #default="scope">
-          <el-button v-hasPermi="['system:lang:edit']" text size="small" icon="edit" title="编辑" @click="handleUpdate(scope.row)"></el-button>
-          <el-button v-hasPermi="['system:lang:delete']" text size="small" icon="delete" title="删除" @click="handleDelete(scope.row)"></el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 行列显示 -->
-    <el-table
-      v-if="queryParams.showMode == 2"
-      :data="dataList"
-      v-loading="loading"
-      ref="table"
-      border
-      highlight-current-row
-      @sort-change="sortChange"
-      @selection-change="handleSelectionChange">
-      <el-table-column prop="langKey" :label="$t('languageKey')" align="center" :show-overflow-tooltip="true" />
-
-      <el-table-column prop="zh-cn" :label="$t('common.chinese')" align="center" :show-overflow-tooltip="true" />
-      <el-table-column prop="en" :label="$t('common.english')" align="center" :show-overflow-tooltip="true" />
-      <el-table-column prop="zh-tw" :label="$t('common.traditionalChinese')" align="center" :show-overflow-tooltip="true" />
-
-      <el-table-column :label="$t('btn.operate')" align="center" width="140">
-        <template #default="scope">
-          <el-button v-hasPermi="['system:lang:edit']" text size="small" icon="edit" title="编辑" @click="handleUpdateP(scope.row)">
-            {{ $t('btn.edit') }}
-          </el-button>
-          <!-- <el-button v-hasPermi="['system:lang:delete']" type="danger" icon="delete" title="删除" @click="handleDeleteP(scope.row)"></el-button> -->
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination
-      v-if="total > 0"
-      class="mt10"
-      background
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList" />
-
-    <!-- 添加或修改多语言配置对话框 -->
-    <el-dialog :title="title" :lock-scroll="false" v-model="open" width="550px">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
-        <el-row :gutter="20">
-          <el-col :lg="24">
-            <el-form-item prop="langKey">
-              <template #label>
-                <el-tooltip content="翻译key，eg：message.title" placement="top">
-                  <el-icon :size="15">
-                    <questionFilled />
-                  </el-icon>
-                </el-tooltip>
-                {{ $t('languageKey') }}
-              </template>
-              <el-input v-model="form.langKey" placeholder="请输入语言key" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-table :data="form.langList">
-            <el-table-column :label="$t('language')" align="center" prop="langCode" width="100">
-              <template #default="scope">
-                {{ scope.row.label }} <br />
-                {{ scope.row.langCode }}
-              </template>
-            </el-table-column>
-            <el-table-column :label="$t('common.content')" align="center">
-              <template #default="scope">
-                <el-input type="textarea" rows="2" prop="langName" v-model="scope.row.langName"></el-input>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <el-button text @click="cancel">{{ $t('btn.cancel') }}</el-button>
-        <el-button type="primary" @click="submitForm">{{ $t('btn.submit') }}</el-button>
-      </template>
-    </el-dialog>
-  </div>
-</template>
-
 <script setup name="commonlang">
-import { listCommonLang, delCommonLang, updateCommonLang, getCommonLang, exportCommonLang, getCommonLangByKey } from '@/api/system/commonlang.js'
+import { delCommonLang, exportCommonLang, getCommonLang, getCommonLangByKey, listCommonLang, updateCommonLang } from '@/api/system/commonlang.js'
 import { isEmpty } from '@/utils/ruoyi.js'
 const { proxy } = getCurrentInstance()
 // 选中id数组数组
@@ -214,7 +49,7 @@ const state = reactive({
   options: {},
 })
 
-var dictParams = [{ dictType: 'sys_lang_type' }]
+const dictParams = [{ dictType: 'sys_lang_type' }]
 proxy.getDicts(dictParams).then((response) => {
   response.data.forEach((element) => {
     state.options[element.dictType] = element.list
@@ -300,8 +135,8 @@ function handleDelete(row) {
   const Ids = row.id || ids.value
 
   proxy
-    .$confirm('是否确认删除参数编号为"' + Ids + '"的数据项？')
-    .then(function () {
+    .$confirm(`是否确认删除参数编号为"${Ids}"的数据项？`)
+    .then(() => {
       return delCommonLang(Ids)
     })
     .then(() => {
@@ -348,15 +183,14 @@ function handleUpdateP(row) {
 function submitForm() {
   const formValid = ref(true)
   form.value.langList.forEach((item) => {
-    if (isEmpty(item.langName)) {
+    if (isEmpty(item.langName))
       formValid.value = false
-    }
   })
   if (!formValid.value) {
-    proxy.$modal.msgError(`请完成表格内容填写`)
+    proxy.$modal.msgError('请完成表格内容填写')
     return
   }
-  proxy.$refs['formRef'].validate((valid) => {
+  proxy.$refs.formRef.validate((valid) => {
     if (valid) {
       updateCommonLang(form.value)
         .then((res) => {
@@ -384,7 +218,7 @@ function handleExport() {
       cancelButtonText: '取消',
       type: 'warning',
     })
-    .then(function () {
+    .then(() => {
       return exportCommonLang(queryParams)
     })
     .then((response) => {
@@ -394,7 +228,7 @@ function handleExport() {
 
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map((item) => item.id)
+  ids.value = selection.map(item => item.id)
   single.value = selection.length != 1
   multiple.value = !selection.length
 }
@@ -404,7 +238,8 @@ function sortChange(column) {
   if (column.prop == null || column.order == null) {
     queryParams.sort = undefined
     queryParams.sortType = undefined
-  } else {
+  }
+  else {
     queryParams.sort = column.prop
     queryParams.sortType = column.order
   }
@@ -414,3 +249,187 @@ function sortChange(column) {
 handleQuery()
 reset()
 </script>
+
+<template>
+  <div class="app-container">
+    <!-- :model属性用于表单验证使用 比如下面的el-form-item 的 prop属性用于对表单值进行验证操作 -->
+    <el-form v-show="showSearch" ref="queryRef" :model="queryParams" label-position="right" inline @submit.prevent>
+      <el-form-item :label="$t('language')" prop="langCode">
+        <el-select v-model="queryParams.langCode" placeholder="请选择语言code">
+          <el-option v-for="item in options.sys_lang_type" :key="item.dictValue" :label="item.dictLabel" :value="item.dictValue" />
+        </el-select>
+      </el-form-item>
+      <el-form-item :label="$t('languageKey')" prop="langKey">
+        <el-input v-model="queryParams.langKey" placeholder="请输入语言key" />
+      </el-form-item>
+      <el-form-item :label="$t('showWay')">
+        <el-radio-group v-model="queryParams.showMode">
+          <el-radio-button label="1">
+            表格
+          </el-radio-button>
+          <el-radio-button label="2">
+            行列
+          </el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+      <el-form-item :label="$t('common.addTime')">
+        <el-date-picker
+          v-model="dateRangeAddtime"
+          style="width: 240px"
+          type="daterange"
+          range-separator="-"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          placeholder="请选择添加时间"
+          value-format="YYYY-MM-DD HH:mm:ss"
+          :shortcuts="dateOptions"
+        />
+      </el-form-item>
+
+      <el-form-item>
+        <el-button icon="search" type="primary" @click="handleQuery">
+          {{ $t('btn.search') }}
+        </el-button>
+        <el-button icon="refresh" @click="resetQuery">
+          {{ $t('btn.reset') }}
+        </el-button>
+      </el-form-item>
+    </el-form>
+    <!-- 工具区域 -->
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['system:lang:add']" type="primary" plain icon="plus" @click="handleAdd">
+          {{ $t('btn.add') }}
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['system:lang:edit']" type="success" :disabled="single" plain icon="edit" @click="handleUpdate">
+          {{ $t('btn.edit') }}
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['system:lang:delete']" type="danger" :disabled="multiple" plain icon="delete" @click="handleDelete">
+          {{ $t('btn.delete') }}
+        </el-button>
+      </el-col>
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['system:lang:export']" type="warning" plain icon="download" @click="handleExport">
+          {{ $t('btn.export') }}
+        </el-button>
+      </el-col>
+      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList" />
+    </el-row>
+
+    <!-- 数据区域 -->
+    <el-table
+      v-if="queryParams.showMode == 1"
+      ref="table"
+      v-loading="loading"
+      :data="dataList"
+      border
+      highlight-current-row
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="50" align="center" />
+
+      <el-table-column prop="id" label="id" align="center" />
+      <el-table-column prop="langCode" :label="$t('language')" align="center">
+        <template #default="scope">
+          <dict-tag :options="sys_lang_type" :value="scope.row.langCode" />
+        </template>
+      </el-table-column>
+      <el-table-column prop="langKey" :label="$t('languageKey')" align="center" :show-overflow-tooltip="true" />
+      <el-table-column prop="langName" :label="$t('common.content')" align="center" :show-overflow-tooltip="true" />
+      <el-table-column prop="addtime" :label="$t('common.addTime')" align="center" :show-overflow-tooltip="true" />
+
+      <el-table-column :label="$t('btn.operate')" align="center" width="140">
+        <template #default="scope">
+          <el-button v-hasPermi="['system:lang:edit']" text size="small" icon="edit" title="编辑" @click="handleUpdate(scope.row)" />
+          <el-button v-hasPermi="['system:lang:delete']" text size="small" icon="delete" title="删除" @click="handleDelete(scope.row)" />
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 行列显示 -->
+    <el-table
+      v-if="queryParams.showMode == 2"
+      ref="table"
+      v-loading="loading"
+      :data="dataList"
+      border
+      highlight-current-row
+      @sort-change="sortChange"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column prop="langKey" :label="$t('languageKey')" align="center" :show-overflow-tooltip="true" />
+
+      <el-table-column prop="zh-cn" :label="$t('common.chinese')" align="center" :show-overflow-tooltip="true" />
+      <el-table-column prop="en" :label="$t('common.english')" align="center" :show-overflow-tooltip="true" />
+      <el-table-column prop="zh-tw" :label="$t('common.traditionalChinese')" align="center" :show-overflow-tooltip="true" />
+
+      <el-table-column :label="$t('btn.operate')" align="center" width="140">
+        <template #default="scope">
+          <el-button v-hasPermi="['system:lang:edit']" text size="small" icon="edit" title="编辑" @click="handleUpdateP(scope.row)">
+            {{ $t('btn.edit') }}
+          </el-button>
+          <!-- <el-button v-hasPermi="['system:lang:delete']" type="danger" icon="delete" title="删除" @click="handleDeleteP(scope.row)"></el-button> -->
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <pagination
+      v-if="total > 0"
+      v-model:page="queryParams.pageNum"
+      v-model:limit="queryParams.pageSize"
+      class="mt10"
+      background
+      :total="total"
+      @pagination="getList"
+    />
+
+    <!-- 添加或修改多语言配置对话框 -->
+    <el-dialog v-model="open" :title="title" :lock-scroll="false" width="550px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="140px">
+        <el-row :gutter="20">
+          <el-col :lg="24">
+            <el-form-item prop="langKey">
+              <template #label>
+                <el-tooltip content="翻译key，eg：message.title" placement="top">
+                  <el-icon :size="15">
+                    <questionFilled />
+                  </el-icon>
+                </el-tooltip>
+                {{ $t('languageKey') }}
+              </template>
+              <el-input v-model="form.langKey" placeholder="请输入语言key" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-table :data="form.langList">
+            <el-table-column :label="$t('language')" align="center" prop="langCode" width="100">
+              <template #default="scope">
+                {{ scope.row.label }} <br>
+                {{ scope.row.langCode }}
+              </template>
+            </el-table-column>
+            <el-table-column :label="$t('common.content')" align="center">
+              <template #default="scope">
+                <el-input v-model="scope.row.langName" type="textarea" rows="2" prop="langName" />
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-row>
+      </el-form>
+      <template #footer>
+        <el-button text @click="cancel">
+          {{ $t('btn.cancel') }}
+        </el-button>
+        <el-button type="primary" @click="submitForm">
+          {{ $t('btn.submit') }}
+        </el-button>
+      </template>
+    </el-dialog>
+  </div>
+</template>

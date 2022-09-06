@@ -1,11 +1,5 @@
-<template>
-  <div ref="chartRef" :class="className" :style="{ height: height, width: width }" />
-</template>
-
 <script setup>
 import * as echarts from 'echarts'
-const { proxy } = getCurrentInstance()
-let chart = null
 const props = defineProps({
   className: {
     type: String,
@@ -20,7 +14,8 @@ const props = defineProps({
     default: '300px',
   },
 })
-
+const { proxy } = getCurrentInstance()
+let chart = null
 function initChart() {
   chart = echarts.init(proxy.$refs.chartRef)
 
@@ -58,3 +53,7 @@ onMounted(() => {
   initChart()
 })
 </script>
+
+<template>
+  <div ref="chartRef" :class="className" :style="{ height, width }" />
+</template>

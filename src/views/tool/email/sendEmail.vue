@@ -1,36 +1,3 @@
-<template>
-  <el-form class="mt10" ref="formRef" :model="form" label-width="110px" :rules="rules">
-    <el-form-item
-      v-for="(domain, index) in form.toEmails"
-      :prop="'toEmails.' + index + '.value'"
-      :label="'收件邮箱' + (index === 0 ? '' : index)"
-      :key="domain.key"
-      :rules="[
-        { required: true, message: '邮箱不能为空', trigger: 'blur' },
-        { message: '请输入正确的邮箱地址', trigger: ['blur', 'change'], type: 'email' },
-      ]"
-    >
-      <el-input v-model="domain.value" style="width: 300px"></el-input>
-      <el-button class="ml10" @click="addDomain" icon="plus" />
-      <el-button class="ml10" @click.prevent="removeDomain(domain)" icon="minus" />
-    </el-form-item>
-    <el-form-item label="邮件主题" prop="subject">
-      <el-input v-model="form.subject"></el-input>
-    </el-form-item>
-    <el-form-item label="邮件内容" prop="htmlContent">
-      <editor v-model="form.htmlContent" />
-    </el-form-item>
-    <el-form-item label="发送自己" prop="sendMe">
-      <el-switch v-model="form.sendMe" active-text="是" inactive-text="否"></el-switch>
-    </el-form-item>
-    <el-form-item label="附件">
-      <UploadFile v-model="form.fileUrl" :limit="5" :fileSize="15" :data="{ fileDir: 'email', uploadType: 1 }" />
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="formSubmit">发送邮件</el-button>
-    </el-form-item>
-  </el-form>
-</template>
 <script setup name="sendEmail">
 import { sendEmail } from '@/api/common'
 import Editor from '@/components/Editor'
@@ -76,15 +43,15 @@ function reset() {
  * 提交
  */
 function formSubmit() {
-  proxy.$refs['formRef'].validate((valid) => {
-    //开启校验
+  proxy.$refs.formRef.validate((valid) => {
+    // 开启校验
     if (valid) {
       proxy.$modal.loading('loading...')
-      var emails = []
+      const emails = []
       form.value.toEmails.filter((x) => {
         emails.push(x.value)
       })
-      var p = {
+      const p = {
         ...form.value,
         toUser: emails.toString(),
       }
@@ -100,19 +67,21 @@ function formSubmit() {
       setTimeout(() => {
         proxy.$modal.closeLoading()
       }, 5000)
-    } else {
+    }
+    else {
       console.log('未通过')
-      //校验不通过
+      // 校验不通过
       return false
     }
   })
 }
 
 function removeDomain(item) {
-  var index = form.value.toEmails.indexOf(item)
+  const index = form.value.toEmails.indexOf(item)
   if (index !== -1 && form.value.toEmails.length !== 1) {
     form.value.toEmails.splice(index, 1)
-  } else {
+  }
+  else {
     proxy.$message({
       message: '请至少保留一位联系人',
       type: 'warning',
@@ -127,6 +96,43 @@ function addDomain() {
   })
 }
 </script>
+
+<template>
+  <el-form ref="formRef" class="mt10" :model="form" label-width="110px" :rules="rules">
+    <el-form-item
+      v-for="(domain, index) in form.toEmails"
+      :key="domain.key"
+      :prop="`toEmails.${index}.value`"
+      :label="`收件邮箱${index === 0 ? '' : index}`"
+      :rules="[
+        { required: true, message: '邮箱不能为空', trigger: 'blur' },
+        { message: '请输入正确的邮箱地址', trigger: ['blur', 'change'], type: 'email' },
+      ]"
+    >
+      <el-input v-model="domain.value" style="width: 300px" />
+      <el-button class="ml10" icon="plus" @click="addDomain" />
+      <el-button class="ml10" icon="minus" @click.prevent="removeDomain(domain)" />
+    </el-form-item>
+    <el-form-item label="邮件主题" prop="subject">
+      <el-input v-model="form.subject" />
+    </el-form-item>
+    <el-form-item label="邮件内容" prop="htmlContent">
+      <Editor v-model="form.htmlContent" />
+    </el-form-item>
+    <el-form-item label="发送自己" prop="sendMe">
+      <el-switch v-model="form.sendMe" active-text="是" inactive-text="否" />
+    </el-form-item>
+    <el-form-item label="附件">
+      <UploadFile v-model="form.fileUrl" :limit="5" :file-size="15" :data="{ fileDir: 'email', uploadType: 1 }" />
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" @click="formSubmit">
+        发送邮件
+      </el-button>
+    </el-form-item>
+  </el-form>
+</template>
+
 <style scoped>
 .el-upload-list {
   width: 200px;

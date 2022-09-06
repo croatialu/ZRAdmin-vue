@@ -1,7 +1,7 @@
-import { login, logout, getInfo, oauthCallback } from '@/api/system/login'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import defAva from '@/assets/images/profile.jpg'
 import Cookies from 'js-cookie'
+import { getInfo, login, logout, oauthCallback } from '@/api/system/login'
+import { getToken, removeToken, setToken } from '@/utils/auth'
+import defAva from '@/assets/images/profile.jpg'
 import { encrypt } from '@/utils/jsencrypt'
 const useUserStore = defineStore('user', {
   state: () => ({
@@ -12,7 +12,7 @@ const useUserStore = defineStore('user', {
     roles: [],
     permissions: [],
     userId: 0,
-    authSource: ''
+    authSource: '',
   }),
   actions: {
     setAuthSource(source) {
@@ -30,10 +30,11 @@ const useUserStore = defineStore('user', {
             if (res.code == 200) {
               setToken(res.data)
               this.token = res.data
-              resolve() //then处理
-            } else {
+              resolve() // then处理
+            }
+            else {
               console.log('login error ', res)
-              reject(res) //catch处理
+              reject(res) // catch处理
             }
           })
           .catch((error) => {
@@ -57,10 +58,11 @@ const useUserStore = defineStore('user', {
             Cookies.set('username', data.userName, { expires: 30 })
             Cookies.set('password', encrypt(data.password), { expires: 30 })
             Cookies.set('rememberMe', true, { expires: 30 })
-            resolve(res) //then处理
-          } else {
+            resolve(res) // then处理
+          }
+          else {
             console.log('login error ', res)
-            reject(res) //catch处理
+            reject(res) // catch处理
           }
         })
       })
@@ -77,14 +79,15 @@ const useUserStore = defineStore('user', {
               // 验证返回的roles是否是一个非空数组
               this.roles = data.roles
               this.permissions = data.permissions
-            } else {
+            }
+            else {
               this.roles = ['ROLE_DEFAULT']
             }
 
             this.name = data.user.nickName
             this.avatar = avatar
-            this.userInfo = data.user //新加
-            this.userId = data.user.userId //新加
+            this.userInfo = data.user // 新加
+            this.userId = data.user.userId // 新加
             resolve(res)
           })
           .catch((error) => {
@@ -116,7 +119,7 @@ const useUserStore = defineStore('user', {
         removeToken()
         resolve()
       })
-    }
-  }
+    },
+  },
 })
 export default useUserStore

@@ -1,12 +1,7 @@
-<template>
-  <el-scrollbar ref="scrollContainer" :vertical="false" class="scroll-container" @wheel.prevent="handleScroll">
-    <slot />
-  </el-scrollbar>
-</template>
-
 <script setup>
 import useTagsViewStore from '@/store/modules/tagsView'
 
+const emits = defineEmits()
 const tagAndTagSpacing = ref(4)
 const { proxy } = getCurrentInstance()
 
@@ -24,7 +19,6 @@ function handleScroll(e) {
   const $scrollWrapper = scrollWrapper.value
   $scrollWrapper.scrollLeft = $scrollWrapper.scrollLeft + eventDelta / 4
 }
-const emits = defineEmits()
 const emitScroll = () => {
   emits('scroll')
 }
@@ -48,21 +42,22 @@ function moveToTarget(currentTag) {
 
   if (firstTag === currentTag) {
     $scrollWrapper.scrollLeft = 0
-  } else if (lastTag === currentTag) {
+  }
+  else if (lastTag === currentTag) {
     $scrollWrapper.scrollLeft = $scrollWrapper.scrollWidth - $containerWidth
-  } else {
+  }
+  else {
     const tagListDom = document.getElementsByClassName('tags-view-item')
-    const currentIndex = visitedViews.value.findIndex((item) => item === currentTag)
+    const currentIndex = visitedViews.value.findIndex(item => item === currentTag)
     let prevTag = null
     let nextTag = null
     for (const k in tagListDom) {
       if (k !== 'length' && Object.hasOwnProperty.call(tagListDom, k)) {
-        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex - 1].path) {
+        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex - 1].path)
           prevTag = tagListDom[k]
-        }
-        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex + 1].path) {
+
+        if (tagListDom[k].dataset.path === visitedViews.value[currentIndex + 1].path)
           nextTag = tagListDom[k]
-        }
       }
     }
 
@@ -71,11 +66,10 @@ function moveToTarget(currentTag) {
 
     // the tag's offsetLeft before of prevTag
     const beforePrevTagOffsetLeft = prevTag.offsetLeft - tagAndTagSpacing.value
-    if (afterNextTagOffsetLeft > $scrollWrapper.scrollLeft + $containerWidth) {
+    if (afterNextTagOffsetLeft > $scrollWrapper.scrollLeft + $containerWidth)
       $scrollWrapper.scrollLeft = afterNextTagOffsetLeft - $containerWidth
-    } else if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft) {
+    else if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft)
       $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
-    }
   }
 }
 
@@ -83,6 +77,12 @@ defineExpose({
   moveToTarget,
 })
 </script>
+
+<template>
+  <el-scrollbar ref="scrollContainer" :vertical="false" class="scroll-container" @wheel.prevent="handleScroll">
+    <slot />
+  </el-scrollbar>
+</template>
 
 <style lang="scss" scoped>
 .scroll-container {

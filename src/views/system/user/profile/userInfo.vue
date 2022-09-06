@@ -1,27 +1,3 @@
-<template>
-  <el-form ref="userRef" :model="user" :rules="rules" label-width="130px" label-position="left">
-    <el-form-item :label="$t('user.nickName')" prop="nickName">
-      <el-input v-model="user.nickName" maxlength="30" />
-    </el-form-item>
-    <el-form-item :label="$t('user.phoneNumber')" prop="phonenumber">
-      <el-input v-model="user.phonenumber" maxlength="11" />
-    </el-form-item>
-    <el-form-item :label="$t('user.userEmail')" prop="email">
-      <el-input v-model="user.email" maxlength="50" />
-    </el-form-item>
-    <el-form-item :label="$t('common.sex')">
-      <el-radio-group v-model="user.sex">
-        <el-radio label="0">{{ $t('common.male') }}</el-radio>
-        <el-radio label="1">{{ $t('common.female') }}</el-radio>
-      </el-radio-group>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" icon="Check" @click="submit">{{ $t('btn.save') }}</el-button>
-      <el-button type="danger" icon="Close" @click="close">{{ $t('btn.close') }}</el-button>
-    </el-form-item>
-  </el-form>
-</template>
-
 <script setup>
 import { updateUserProfile } from '@/api/system/user'
 
@@ -39,7 +15,7 @@ const rules = ref({
     { required: true, message: '邮箱地址不能为空', trigger: 'blur' },
     {
       type: 'email',
-      message: "'请输入正确的邮箱地址",
+      message: '\'请输入正确的邮箱地址',
       trigger: ['blur', 'change'],
     },
   ],
@@ -68,3 +44,35 @@ function close() {
   proxy.$tab.closePage()
 }
 </script>
+
+<template>
+  <el-form ref="userRef" :model="user" :rules="rules" label-width="130px" label-position="left">
+    <el-form-item :label="$t('user.nickName')" prop="nickName">
+      <el-input v-model="user.nickName" maxlength="30" />
+    </el-form-item>
+    <el-form-item :label="$t('user.phoneNumber')" prop="phonenumber">
+      <el-input v-model="user.phonenumber" maxlength="11" />
+    </el-form-item>
+    <el-form-item :label="$t('user.userEmail')" prop="email">
+      <el-input v-model="user.email" maxlength="50" />
+    </el-form-item>
+    <el-form-item :label="$t('common.sex')">
+      <el-radio-group v-model="user.sex">
+        <el-radio label="0">
+          {{ $t('common.male') }}
+        </el-radio>
+        <el-radio label="1">
+          {{ $t('common.female') }}
+        </el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item>
+      <el-button type="primary" icon="Check" @click="submit">
+        {{ $t('btn.save') }}
+      </el-button>
+      <el-button type="danger" icon="Close" @click="close">
+        {{ $t('btn.close') }}
+      </el-button>
+    </el-form-item>
+  </el-form>
+</template>

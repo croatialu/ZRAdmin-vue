@@ -1,3 +1,9 @@
+<script setup>
+const message = computed(() => {
+  return '找不到网页！'
+})
+</script>
+
 <template>
   <div class="wscn-http404-container">
     <div class="wscn-http404">
@@ -24,12 +30,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-let message = computed(() => {
-  return '找不到网页！'
-})
-</script>
 
 <style lang="scss" scoped>
 .wscn-http404-container{

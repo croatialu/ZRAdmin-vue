@@ -1,12 +1,5 @@
-<template>
-  <div ref="chartRef" :class="className" :style="{ height: height, width: width }" />
-</template>
-
 <script setup>
 import * as echarts from 'echarts'
-let chart = null
-const { proxy } = getCurrentInstance()
-const animationDuration = 6000
 const props = defineProps({
   className: {
     type: String,
@@ -21,6 +14,9 @@ const props = defineProps({
     default: '300px',
   },
 })
+let chart = null
+const { proxy } = getCurrentInstance()
+const animationDuration = 6000
 function initChart() {
   chart = echarts.init(proxy.$refs.chartRef, 'macarons')
 
@@ -88,3 +84,7 @@ onMounted(() => {
   initChart()
 })
 </script>
+
+<template>
+  <div ref="chartRef" :class="className" :style="{ height, width }" />
+</template>

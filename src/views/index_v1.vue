@@ -1,135 +1,11 @@
-<template>
-  <div class="dashboard-editor-container home">
-    <!-- 用户信息 -->
-    <el-row :gutter="15">
-      <el-col :md="24" :lg="14" :xl="14" class="mb10">
-        <el-card shadow="hover">
-          <template #header>
-            <span>{{ $t('layout.myWorkbench') }}</span>
-          </template>
-          <div class="user-item">
-            <div class="user-item-left">
-              <img :src="userInfo.avatar" />
-            </div>
-
-            <div class="user-item-right overflow">
-              <el-row>
-                <el-col :xs="24" :md="24" class="right-title mb20 one-text-overflow">
-                  {{ userInfo.welcomeMessage + ',' + userInfo.nickName + ' ,' + userInfo.welcomeContent }}
-                </el-col>
-                <el-col :xs="24" :sm="24" :md="24">
-                  <el-row>
-                    <el-col :xs="24" :lg="8" class="right-l-v">
-                      <div class="right-label">{{ $t('common.nickName') }}：</div>
-                      <div class="right-value">{{ userInfo.nickName }}</div>
-                    </el-col>
-                    <el-col :xs="24" :lg="16" class="right-l-v">
-                      <div class="right-label">{{ $t('layout.identity') }}：</div>
-                      <div class="right-value">
-                        <span v-for="item in userInfo.roles" :key="item.roleId">
-                          {{ item.roleName }}
-                        </span>
-                      </div>
-                    </el-col>
-                  </el-row>
-                </el-col>
-                <el-col :md="24" class="mt10">
-                  <el-row>
-                    <el-col :xs="24" :sm="12" :md="8" class="right-l-v">
-                      <div class="right-label one-text-overflow">IP：</div>
-                      <div class="right-value one-text-overflow">
-                        {{ userInfo.loginIP }}
-                      </div>
-                    </el-col>
-                    <el-col :xs="24" :sm="12" :md="16" class="right-l-v">
-                      <div class="right-label one-text-overflow">{{ $t('common.time') }}：</div>
-                      <div class="right-value one-text-overflow">
-                        {{ currentTime }}
-                      </div>
-                    </el-col>
-                  </el-row>
-                </el-col>
-                <el-col :lg="24" class="mt10">
-                  <el-button size="small" icon="edit">
-                    <router-link to="/user/profile">{{ $t('layout.modifyInformation') }}</router-link>
-                  </el-button>
-                </el-col>
-              </el-row>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :md="24" :lg="10" :xl="10" class="mb10">
-        <el-card shadow="hover">
-          <template #header>
-            <div>
-              <span>{{ $t('layout.onlineUsers') }}</span>
-              <el-button class="home-card-more" text @click="onOpenGitee">{{ $t('btn.more') }}</el-button>
-            </div>
-          </template>
-          <div class="info">
-            <el-scrollbar wrap-class="scrollbar-wrapper">
-              <div class="info-scroll">
-                <ul class="info-ul">
-                  <li v-for="(v, k) in onlineUsers" :key="k" class="info-item">
-                    <div class="info-item-left" v-text="v.name"></div>
-                    <div>{{ v.userIP }}({{ v.location }})</div>
-                    <div class="info-item-right" v-text="dayjs(v.loginTime).format('MM/DD日HH:mm:ss')"></div>
-                    <el-button text @click="onChat(v)" icon="bell" v-hasRole="['admin']">通知</el-button>
-                  </li>
-                </ul>
-              </div>
-            </el-scrollbar>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
-
-    <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="24">
-        <div class="chart-wrapper">
-          <line-chart :chart-data="lineChartData" :key="dataType" />
-        </div>
-      </el-col>
-    </el-row>
-
-    <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <raddar-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <pie-chart />
-        </div>
-      </el-col>
-      <el-col :xs="24" :sm="24" :lg="8">
-        <div class="chart-wrapper">
-          <bar-chart />
-        </div>
-      </el-col>
-    </el-row>
-    <el-row :gutter="32">
-      <el-col :xs="24" :sm="24" :lg="24">
-        <div class="chart-wrapper">
-          <WordCloudChat :data="data.wordCloud" />
-        </div>
-      </el-col>
-    </el-row>
-  </div>
-</template>
-
 <script setup name="index">
+import dayjs from 'dayjs'
 import PanelGroup from './dashboard/PanelGroup'
 import LineChart from './dashboard/LineChart'
 import RaddarChart from './dashboard/RaddarChart'
 import PieChart from './dashboard/PieChart'
 import BarChart from './dashboard/BarChart'
 import WordCloudChat from './dashboard/WordCloud.vue'
-
-import dayjs from 'dayjs'
 
 import useUserStore from '@/store/modules/user'
 import useSocketStore from '@/store/modules/socket'
@@ -230,13 +106,152 @@ function onChat(item) {
       inputErrorMessage: '消息内容不能为空',
     })
     .then(({ value }) => {
-      proxy.signalr.SR.invoke('SendMessage', item.connnectionId, item.name, value).catch(function (err) {
+      proxy.signalr.SR.invoke('SendMessage', item.connnectionId, item.name, value).catch((err) => {
         console.error(err.toString())
       })
     })
     .catch(() => {})
 }
 </script>
+
+<template>
+  <div class="dashboard-editor-container home">
+    <!-- 用户信息 -->
+    <el-row :gutter="15">
+      <el-col :md="24" :lg="14" :xl="14" class="mb10">
+        <el-card shadow="hover">
+          <template #header>
+            <span>{{ $t('layout.myWorkbench') }}</span>
+          </template>
+          <div class="user-item">
+            <div class="user-item-left">
+              <img :src="userInfo.avatar">
+            </div>
+
+            <div class="user-item-right overflow">
+              <el-row>
+                <el-col :xs="24" :md="24" class="right-title mb20 one-text-overflow">
+                  {{ `${userInfo.welcomeMessage},${userInfo.nickName} ,${userInfo.welcomeContent}` }}
+                </el-col>
+                <el-col :xs="24" :sm="24" :md="24">
+                  <el-row>
+                    <el-col :xs="24" :lg="8" class="right-l-v">
+                      <div class="right-label">
+                        {{ $t('common.nickName') }}：
+                      </div>
+                      <div class="right-value">
+                        {{ userInfo.nickName }}
+                      </div>
+                    </el-col>
+                    <el-col :xs="24" :lg="16" class="right-l-v">
+                      <div class="right-label">
+                        {{ $t('layout.identity') }}：
+                      </div>
+                      <div class="right-value">
+                        <span v-for="item in userInfo.roles" :key="item.roleId">
+                          {{ item.roleName }}
+                        </span>
+                      </div>
+                    </el-col>
+                  </el-row>
+                </el-col>
+                <el-col :md="24" class="mt10">
+                  <el-row>
+                    <el-col :xs="24" :sm="12" :md="8" class="right-l-v">
+                      <div class="right-label one-text-overflow">
+                        IP：
+                      </div>
+                      <div class="right-value one-text-overflow">
+                        {{ userInfo.loginIP }}
+                      </div>
+                    </el-col>
+                    <el-col :xs="24" :sm="12" :md="16" class="right-l-v">
+                      <div class="right-label one-text-overflow">
+                        {{ $t('common.time') }}：
+                      </div>
+                      <div class="right-value one-text-overflow">
+                        {{ currentTime }}
+                      </div>
+                    </el-col>
+                  </el-row>
+                </el-col>
+                <el-col :lg="24" class="mt10">
+                  <el-button size="small" icon="edit">
+                    <router-link to="/user/profile">
+                      {{ $t('layout.modifyInformation') }}
+                    </router-link>
+                  </el-button>
+                </el-col>
+              </el-row>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :md="24" :lg="10" :xl="10" class="mb10">
+        <el-card shadow="hover">
+          <template #header>
+            <div>
+              <span>{{ $t('layout.onlineUsers') }}</span>
+              <el-button class="home-card-more" text @click="onOpenGitee">
+                {{ $t('btn.more') }}
+              </el-button>
+            </div>
+          </template>
+          <div class="info">
+            <el-scrollbar wrap-class="scrollbar-wrapper">
+              <div class="info-scroll">
+                <ul class="info-ul">
+                  <li v-for="(v, k) in onlineUsers" :key="k" class="info-item">
+                    <div class="info-item-left" v-text="v.name" />
+                    <div>{{ v.userIP }}({{ v.location }})</div>
+                    <div class="info-item-right" v-text="dayjs(v.loginTime).format('MM/DD日HH:mm:ss')" />
+                    <el-button v-hasRole="['admin']" text icon="bell" @click="onChat(v)">
+                      通知
+                    </el-button>
+                  </li>
+                </ul>
+              </div>
+            </el-scrollbar>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <PanelGroup @handleSetLineChartData="handleSetLineChartData" />
+
+    <el-row :gutter="32">
+      <el-col :xs="24" :sm="24" :lg="24">
+        <div class="chart-wrapper">
+          <LineChart :key="dataType" :chart-data="lineChartData" />
+        </div>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="32">
+      <el-col :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <RaddarChart />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <PieChart />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <BarChart />
+        </div>
+      </el-col>
+    </el-row>
+    <el-row :gutter="32">
+      <el-col :xs="24" :sm="24" :lg="24">
+        <div class="chart-wrapper">
+          <WordCloudChat :data="data.wordCloud" />
+        </div>
+      </el-col>
+    </el-row>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .home {

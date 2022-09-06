@@ -1,41 +1,7 @@
-<template>
-  <el-menu
-    :default-active="activeMenu"
-    :active-text-color="theme"
-    mode="horizontal"
-    background-color="transparent"
-    @select="handleSelect"
-    :ellipsis="false">
-    <template v-for="(item, index) in topMenus">
-      <el-menu-item :style="{ '--theme': theme }" :index="item.path" :key="index" v-if="index < visibleNumber">
-        <svg-icon :name="item.meta.icon" />
-        <!-- {{ item.meta.title }} -->
-        <template v-if="item.meta.titleKey" #title>
-          {{ $t(item.meta.titleKey) }}
-        </template>
-        <template v-else-if="item.meta.title" #title>
-          {{ item.meta.title }}
-        </template>
-      </el-menu-item>
-    </template>
-
-    <!-- 顶部菜单超出数量折叠 -->
-    <el-sub-menu :style="{ '--theme': theme }" index="more" v-if="topMenus.length > visibleNumber">
-      <template #title>{{ $t('btn.more') }}</template>
-      <template v-for="(item, index) in topMenus">
-        <el-menu-item :index="item.path" :key="index" v-if="index >= visibleNumber">
-          <svg-icon :name="item.meta.icon" />
-          <span style="margin-left: 5px">{{ item.meta.title }}</span>
-        </el-menu-item>
-      </template>
-    </el-sub-menu>
-  </el-menu>
-</template>
-
 <script setup>
+import { useRouter } from 'vue-router'
 import { constantRoutes } from '@/router'
 import { isHttp } from '@/utils/validate'
-import { useRouter } from 'vue-router'
 import { getNormalPath } from '@/utils/ruoyi'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
@@ -61,15 +27,14 @@ const routers = computed(() => permissionStore.topbarRouters)
 
 // 顶部显示菜单
 const topMenus = computed(() => {
-  let topMenus = []
+  const topMenus = []
   routers.value.map((menu) => {
     if (menu.hidden !== true) {
       // 兼容顶部栏一级菜单内部跳转
-      if (menu.path === '/') {
+      if (menu.path === '/')
         topMenus.push(menu.children[0])
-      } else {
+      else
         topMenus.push(menu)
-      }
     }
   })
   return topMenus
@@ -77,16 +42,16 @@ const topMenus = computed(() => {
 
 // 设置子路由
 const childrenMenus = computed(() => {
-  let childrenMenus = []
+  const childrenMenus = []
   routers.value.map((router) => {
-    for (let item in router.children) {
+    for (const item in router.children) {
       if (router.children[item].parentPath === undefined) {
         if (router.path === '/') {
-          router.children[item].path = getNormalPath('/redirect/' + router.children[item].path)
-        } else {
-          if (!isHttp(router.children[item].path)) {
-            router.children[item].path = getNormalPath(router.path + '/' + router.children[item].path)
-          }
+          router.children[item].path = getNormalPath(`/redirect/${router.children[item].path}`)
+        }
+        else {
+          if (!isHttp(router.children[item].path))
+            router.children[item].path = getNormalPath(`${router.path}/${router.children[item].path}`)
         }
         router.children[item].parentPath = router.path
       }
@@ -102,15 +67,15 @@ const activeMenu = computed(() => {
   let activePath = defaultRouter.value
   if (path.lastIndexOf('/') > 0) {
     const tmpPath = path.substring(1, path.length)
-    activePath = '/' + tmpPath.substring(0, tmpPath.indexOf('/'))
-  } else if ('/index' == path || '' == path) {
-    if (!isFrist.value) {
-      isFrist.value = true
-    } else {
-      activePath = 'index'
-    }
+    activePath = `/${tmpPath.substring(0, tmpPath.indexOf('/'))}`
   }
-  let routes = activeRoutes(activePath)
+  else if (path == '/index' || path == '') {
+    if (!isFrist.value)
+      isFrist.value = true
+    else
+      activePath = 'index'
+  }
+  const routes = activeRoutes(activePath)
   if (routes.length === 0) {
     activePath = currentIndex.value || defaultRouter.value
 
@@ -139,27 +104,28 @@ function handleSelect(key, keyPath) {
   if (isHttp(key)) {
     // http(s):// 路径新窗口打开
     window.open(key, '_blank')
-  } else if (key.indexOf('/redirect') !== -1) {
+  }
+  else if (key.includes('/redirect')) {
     // /redirect 路径内部打开
     router.push({ path: key.replace('/redirect', '') }).catch((err) => {})
-  } else {
+  }
+  else {
     // 显示左侧联动菜单
     activeRoutes(key)
   }
 }
 // 当前激活的路由
 function activeRoutes(key) {
-  var routes = []
+  const routes = []
   if (childrenMenus.value && childrenMenus.value.length > 0) {
     childrenMenus.value.map((item) => {
-      if (key == item.parentPath || (key == 'index' && '' == item.path)) {
+      if (key == item.parentPath || (key == 'index' && item.path == ''))
         routes.push(item)
-      }
     })
   }
-  if (routes.length > 0) {
+  if (routes.length > 0)
     permissionStore.setSidebarRouters(routes)
-  }
+
   return routes
 }
 
@@ -174,6 +140,43 @@ onMounted(() => {
   setVisibleNumber()
 })
 </script>
+
+<template>
+  <el-menu
+    :default-active="activeMenu"
+    :active-text-color="theme"
+    mode="horizontal"
+    background-color="transparent"
+    :ellipsis="false"
+    @select="handleSelect"
+  >
+    <template v-for="(item, index) in topMenus">
+      <el-menu-item v-if="index < visibleNumber" :key="index" :style="{ '--theme': theme }" :index="item.path">
+        <svg-icon :name="item.meta.icon" />
+        <!-- {{ item.meta.title }} -->
+        <template v-if="item.meta.titleKey" #title>
+          {{ $t(item.meta.titleKey) }}
+        </template>
+        <template v-else-if="item.meta.title" #title>
+          {{ item.meta.title }}
+        </template>
+      </el-menu-item>
+    </template>
+
+    <!-- 顶部菜单超出数量折叠 -->
+    <el-sub-menu v-if="topMenus.length > visibleNumber" :style="{ '--theme': theme }" index="more">
+      <template #title>
+        {{ $t('btn.more') }}
+      </template>
+      <template v-for="(item, index) in topMenus">
+        <el-menu-item v-if="index >= visibleNumber" :key="index" :index="item.path">
+          <svg-icon :name="item.meta.icon" />
+          <span style="margin-left: 5px">{{ item.meta.title }}</span>
+        </el-menu-item>
+      </template>
+    </el-sub-menu>
+  </el-menu>
+</template>
 
 <style lang="scss">
 // 修改默认样式

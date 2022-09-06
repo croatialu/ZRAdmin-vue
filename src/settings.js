@@ -67,5 +67,5 @@ export default {
   /**
    * 水印文案
    */
-  watermarkText: 'ZRAdmin.NET'
+  watermarkText: 'ZRAdmin.NET',
 }

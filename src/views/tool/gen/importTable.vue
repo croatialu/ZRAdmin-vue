@@ -1,40 +1,7 @@
-<template>
-  <!-- 导入表 -->
-  <el-dialog title="导入表" v-model="visible" width="900px" top="5vh" append-to-body>
-    <el-form ref="queryRef" :inline="true" :rules="rules" :model="queryParams">
-      <el-form-item label="数据库" prop="dbName">
-        <el-select v-model="queryParams.dbName" clearable placeholder="请选择" @change="handleQuery">
-          <el-option v-for="item in dbList" :key="item" :label="item" :value="item" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="表名">
-        <el-input v-model="queryParams.tableName" clearable placeholder="输入要查询的表名" />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="search" @click="handleQuery()">查询</el-button>
-      </el-form-item>
-    </el-form>
-    <el-row>
-      <el-table ref="table" @row-click="clickRow" :data="dbTableList" highlight-current-row height="300px" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="name" label="表名" sortable="custom" width="380" />
-        <el-table-column prop="description" label="表描述" />
-      </el-table>
-      <pagination v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" v-model:total="total" @pagination="getList" />
-
-    </el-row>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button type="primary" @click="handleImportTable">确 定</el-button>
-        <el-button @click="visible = false">取 消</el-button>
-      </div>
-    </template>
-  </el-dialog>
-</template>
-
 <script setup>
-import { listDbTable, importTable, codeGetDBList } from '@/api/tool/gen'
+import { codeGetDBList, importTable, listDbTable } from '@/api/tool/gen'
 
+const emit = defineEmits(['ok'])
 const total = ref(0)
 const visible = ref(false)
 const tables = ref([])
@@ -51,8 +18,6 @@ const queryParams = reactive({
 const rules = reactive({
   dbName: [{ required: true, message: '请选择数据库名称', trigger: 'blur' }],
 })
-const emit = defineEmits(['ok'])
-
 /** 查询参数列表 */
 function show() {
   getList()
@@ -64,8 +29,8 @@ function clickRow(row) {
 }
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  tables.value = selection.map((item) => item.name)
-	console.log(tables.value)
+  tables.value = selection.map(item => item.name)
+  console.log(tables.value)
 }
 /** 查询表数据 */
 function getList() {
@@ -107,3 +72,42 @@ defineExpose({
   show,
 })
 </script>
+
+<template>
+  <!-- 导入表 -->
+  <el-dialog v-model="visible" title="导入表" width="900px" top="5vh" append-to-body>
+    <el-form ref="queryRef" :inline="true" :rules="rules" :model="queryParams">
+      <el-form-item label="数据库" prop="dbName">
+        <el-select v-model="queryParams.dbName" clearable placeholder="请选择" @change="handleQuery">
+          <el-option v-for="item in dbList" :key="item" :label="item" :value="item" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="表名">
+        <el-input v-model="queryParams.tableName" clearable placeholder="输入要查询的表名" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="search" @click="handleQuery()">
+          查询
+        </el-button>
+      </el-form-item>
+    </el-form>
+    <el-row>
+      <el-table ref="table" :data="dbTableList" highlight-current-row height="300px" @row-click="clickRow" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" />
+        <el-table-column prop="name" label="表名" sortable="custom" width="380" />
+        <el-table-column prop="description" label="表描述" />
+      </el-table>
+      <pagination v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" v-model:total="total" @pagination="getList" />
+    </el-row>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="handleImportTable">
+          确 定
+        </el-button>
+        <el-button @click="visible = false">
+          取 消
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+</template>

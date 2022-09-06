@@ -1,77 +1,5 @@
-<template>
-  <div class="app-container">
-    <el-row :gutter="24">
-      <!-- :model属性用于表单验证使用 比如下面的el-form-item 的 prop属性用于对表单值进行验证操作 -->
-      <el-form :model="queryParams" label-position="left" inline ref="queryForm" label-width="100px" v-show="showSearch" @submit.prevent>
-        <el-form-item label="文章标题" prop="title">
-          <el-input v-model="queryParams.title" placeholder="请输入文章标题" />
-        </el-form-item>
-        <el-form-item label="文章状态" prop="status">
-          <el-select v-model="queryParams.status">
-            <el-option v-for="item in statusOptions" :key="item.dictValue" :label="item.dictLabel" :value="item.dictValue"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="search" @click="handleQuery">搜索</el-button>
-          <el-button icon="refresh" @click="resetQuery">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </el-row>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button type="primary" plain icon="plus" v-hasPermi="['system:article:add']" @click="handleAdd">发布文章</el-button>
-      </el-col>
-      <right-toolbar :showSearch="showSearch"></right-toolbar>
-    </el-row>
-
-    <el-table :data="dataList" ref="table" border>
-      <el-table-column prop="cid" label="id" width="60" sortable> </el-table-column>
-      <el-table-column prop="title" label="文章标题" width="120" :show-overflow-tooltip="true"> </el-table-column>
-      <el-table-column prop="coverUrl" label="文章封面" width="90" :show-overflow-tooltip="true">
-        <template #default="{ row }">
-          <el-image
-            preview-teleported
-            :src="row.coverUrl"
-            :preview-src-list="[row.coverUrl]"
-            :hide-on-click-modal="true"
-            fit="contain"
-            lazy
-            class="el-avatar">
-          </el-image>
-        </template>
-      </el-table-column>
-      <el-table-column prop="authorName" label="作者" width="80"> </el-table-column>
-      <el-table-column prop="fmt_type" label="编辑器类型" width="100"> </el-table-column>
-      <el-table-column prop="tags" label="标签" width="100" :show-overflow-tooltip="true"> </el-table-column>
-      <el-table-column prop="hits" label="点击量" width="80" align="center"> </el-table-column>
-      <el-table-column prop="content" label="文章内容" :show-overflow-tooltip="true"> </el-table-column>
-      <el-table-column sortable prop="status" align="center" label="状态" width="90">
-        <template #default="scope">
-          <el-tag :type="scope.row.status == '2' ? 'danger' : 'success'" disable-transitions
-            >{{ scope.row.status == '2' ? '草稿' : '已发布' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column prop="createTime" label="创建时间" width="128" :show-overflow-tooltip="true"> </el-table-column>
-      <el-table-column label="操作" align="center" width="230">
-        <template #default="scope">
-          <el-button text size="small" icon="view" @click="handleView(scope.row)">查看</el-button>
-          <el-button text size="small" icon="edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:article:update']">编辑</el-button>
-          <el-popconfirm title="确定删除吗？" @onConfirm="handleDelete(scope.row)" style="margin-left: 10px">
-            <template #reference>
-              <el-button text size="small" icon="delete" v-hasPermi="['system:article:delete']">删除</el-button>
-            </template>
-          </el-popconfirm>
-        </template>
-      </el-table-column>
-    </el-table>
-    <pagination :total="total" v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" @pagination="getList" />
-  </div>
-</template>
 <script setup name="articleindex">
-import { listArticle, delArticle } from '@/api/article/article.js'
+import { delArticle, listArticle } from '@/api/article/article.js'
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 // 显示搜索条件
@@ -140,9 +68,94 @@ function handleUpdate(row) {
 }
 // 详情
 function handleView(row) {
-  var link = `${previewUrl.value}${row.cid}`
+  const link = `${previewUrl.value}${row.cid}`
   window.open(link)
 }
 
 handleQuery()
 </script>
+
+<template>
+  <div class="app-container">
+    <el-row :gutter="24">
+      <!-- :model属性用于表单验证使用 比如下面的el-form-item 的 prop属性用于对表单值进行验证操作 -->
+      <el-form v-show="showSearch" ref="queryForm" :model="queryParams" label-position="left" inline label-width="100px" @submit.prevent>
+        <el-form-item label="文章标题" prop="title">
+          <el-input v-model="queryParams.title" placeholder="请输入文章标题" />
+        </el-form-item>
+        <el-form-item label="文章状态" prop="status">
+          <el-select v-model="queryParams.status">
+            <el-option v-for="item in statusOptions" :key="item.dictValue" :label="item.dictLabel" :value="item.dictValue" />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="search" @click="handleQuery">
+            搜索
+          </el-button>
+          <el-button icon="refresh" @click="resetQuery">
+            重置
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-row>
+
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button v-hasPermi="['system:article:add']" type="primary" plain icon="plus" @click="handleAdd">
+          发布文章
+        </el-button>
+      </el-col>
+      <right-toolbar :show-search="showSearch" />
+    </el-row>
+
+    <el-table ref="table" :data="dataList" border>
+      <el-table-column prop="cid" label="id" width="60" sortable />
+      <el-table-column prop="title" label="文章标题" width="120" :show-overflow-tooltip="true" />
+      <el-table-column prop="coverUrl" label="文章封面" width="90" :show-overflow-tooltip="true">
+        <template #default="{ row }">
+          <el-image
+            preview-teleported
+            :src="row.coverUrl"
+            :preview-src-list="[row.coverUrl]"
+            :hide-on-click-modal="true"
+            fit="contain"
+            lazy
+            class="el-avatar"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column prop="authorName" label="作者" width="80" />
+      <el-table-column prop="fmt_type" label="编辑器类型" width="100" />
+      <el-table-column prop="tags" label="标签" width="100" :show-overflow-tooltip="true" />
+      <el-table-column prop="hits" label="点击量" width="80" align="center" />
+      <el-table-column prop="content" label="文章内容" :show-overflow-tooltip="true" />
+      <el-table-column sortable prop="status" align="center" label="状态" width="90">
+        <template #default="scope">
+          <el-tag :type="scope.row.status == '2' ? 'danger' : 'success'" disable-transitions>
+            {{ scope.row.status == '2' ? '草稿' : '已发布' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+
+      <el-table-column prop="createTime" label="创建时间" width="128" :show-overflow-tooltip="true" />
+      <el-table-column label="操作" align="center" width="230">
+        <template #default="scope">
+          <el-button text size="small" icon="view" @click="handleView(scope.row)">
+            查看
+          </el-button>
+          <el-button v-hasPermi="['system:article:update']" text size="small" icon="edit" @click="handleUpdate(scope.row)">
+            编辑
+          </el-button>
+          <el-popconfirm title="确定删除吗？" style="margin-left: 10px" @onConfirm="handleDelete(scope.row)">
+            <template #reference>
+              <el-button v-hasPermi="['system:article:delete']" text size="small" icon="delete">
+                删除
+              </el-button>
+            </template>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </el-table>
+    <pagination v-model:page="queryParams.pageNum" v-model:limit="queryParams.pageSize" :total="total" @pagination="getList" />
+  </div>
+</template>

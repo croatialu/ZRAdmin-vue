@@ -1,58 +1,8 @@
-<template>
-  <div class="app-container">
-    <el-row :gutter="24">
-      <!-- :model属性用于表单验证使用 比如下面的el-form-item 的 prop属性用于对表单值进行验证操作 -->
-      <el-form :model="form" ref="formRef" label-width="100px" :rules="rules" @submit.prevent>
-        <el-form-item label="文章标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入文章标题（必须）" />
-        </el-form-item>
-
-        <el-form-item label="文章分类" prop="categoryId">
-          <el-cascader
-            class="w100"
-            :options="categoryOptions"
-            :props="{ checkStrictly: true, value: 'categoryId', label: 'name', emitPath: false }"
-            placeholder="请选择文章分类"
-            clearable
-            v-model="form.category_Id" />
-        </el-form-item>
-
-        <el-form-item label="文章标签">
-          <el-tag v-for="tag in form.dynamicTags" :key="tag" class="mr10" closable :disable-transitions="false" @close="handleCloseTag(tag)">
-            {{ tag }}
-          </el-tag>
-          <el-input
-            v-if="inputVisible"
-            ref="inputRef"
-            v-model="inputValue"
-            class="w20"
-            @keyup.enter="handleInputConfirm"
-            @blur="handleInputConfirm" />
-
-          <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 文章标签</el-button>
-        </el-form-item>
-        <el-form-item label="文章封面">
-          <UploadImage ref="uploadRef" v-model="form.coverUrl" :limit="1" :fileSize="15" :drag="true" />
-        </el-form-item>
-        <el-form-item prop="content" label="文章内容">
-          <MdEditor v-model="form.content" :onUploadImg="onUploadImg" />
-        </el-form-item>
-
-        <el-col :lg="24">
-          <el-form-item style="text-align: right">
-            <el-button @click="handlePublish('1')">发布文章</el-button>
-            <el-button type="success" @click="handlePublish('2')">存为草稿</el-button>
-          </el-form-item>
-        </el-col>
-      </el-form>
-    </el-row>
-  </div>
-</template>
 <script setup name="articlepublish">
-import { addArticle, updateArticle, getArticle } from '@/api/article/article.js'
+import MdEditor from 'md-editor-v3'
+import { addArticle, getArticle, updateArticle } from '@/api/article/article.js'
 import { treelistArticleCategory } from '@/api/article/articlecategory.js'
 import { upload } from '@/api/common.js'
-import MdEditor from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
 
 const { proxy } = getCurrentInstance()
@@ -70,12 +20,12 @@ const data = reactive({
     tags: undefined,
     cid: undefined,
     content: undefined,
-    status: undefined
+    status: undefined,
   },
   rules: {
     title: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
-    content: [{ required: true, message: '内容不能为空', trigger: 'blur' }]
-  }
+    content: [{ required: true, message: '内容不能为空', trigger: 'blur' }],
+  },
 })
 
 const { form, rules } = toRefs(data)
@@ -86,9 +36,8 @@ form.value.cid = cid
 /** 查询菜单下拉树结构 */
 function getCategoryTreeselect() {
   treelistArticleCategory({}).then((res) => {
-    if (res.code == 200) {
+    if (res.code == 200)
       categoryOptions.value = res.data
-    }
   })
 }
 
@@ -101,13 +50,13 @@ async function onUploadImg(files, callback) {
         form.append('file', file)
 
         upload(form)
-          .then((res) => rev(res))
-          .catch((error) => rej(error))
+          .then(res => rev(res))
+          .catch(error => rej(error))
       })
-    })
+    }),
   )
 
-  callback(res.map((item) => item.data.url))
+  callback(res.map(item => item.data.url))
 }
 
 /** 提交按钮 */
@@ -115,23 +64,26 @@ function handlePublish(status) {
   form.value.status = status
   form.value.tags = form.value.dynamicTags.toString()
 
-  proxy.$refs['formRef'].validate((valid) => {
+  proxy.$refs.formRef.validate((valid) => {
     if (valid) {
       if (form.value.cid != undefined) {
         updateArticle(form.value).then((res) => {
           if (res.code == 200) {
             proxy.$modal.msgSuccess('修改文章成功')
             proxy.$tab.closeOpenPage({ path: '/tool/article/index' })
-          } else {
+          }
+          else {
             proxy.$modal.msgError('修改文章失败')
           }
         })
-      } else {
+      }
+      else {
         addArticle(form.value).then((res) => {
           if (res.code == 200) {
             proxy.$modal.msgSuccess('发布文章成功')
             proxy.$tab.closeOpenPage({ path: '/tool/article/index' })
-          } else {
+          }
+          else {
             proxy.$modal.msgError('发布文章失败')
           }
         })
@@ -151,17 +103,18 @@ const showInput = () => {
 }
 // 标签确认
 function handleInputConfirm() {
-  if (inputValue.value) {
+  if (inputValue.value)
     form.value.dynamicTags.push(inputValue.value)
-  }
+
   inputVisible.value = false
   inputValue.value = ''
 }
 function getInfo(cid) {
-  if (!cid || cid == undefined) return
+  if (!cid || cid == undefined)
+    return
   getArticle(cid).then((res) => {
     if (res.code == 200) {
-      var data = res.data
+      const data = res.data
       form.value = {
         fmt_type: data.fmt_type,
         cid: parseInt(cid),
@@ -169,7 +122,7 @@ function getInfo(cid) {
         content: data.content,
         category_Id: data.category_Id,
         coverUrl: data.coverUrl,
-        dynamicTags: data.tags != null && data.tags.length > 0 ? data.tags.split(',') : []
+        dynamicTags: data.tags != null && data.tags.length > 0 ? data.tags.split(',') : [],
       }
     }
   })
@@ -177,6 +130,66 @@ function getInfo(cid) {
 getInfo(cid)
 getCategoryTreeselect()
 </script>
+
+<template>
+  <div class="app-container">
+    <el-row :gutter="24">
+      <!-- :model属性用于表单验证使用 比如下面的el-form-item 的 prop属性用于对表单值进行验证操作 -->
+      <el-form ref="formRef" :model="form" label-width="100px" :rules="rules" @submit.prevent>
+        <el-form-item label="文章标题" prop="title">
+          <el-input v-model="form.title" placeholder="请输入文章标题（必须）" />
+        </el-form-item>
+
+        <el-form-item label="文章分类" prop="categoryId">
+          <el-cascader
+            v-model="form.category_Id"
+            class="w100"
+            :options="categoryOptions"
+            :props="{ checkStrictly: true, value: 'categoryId', label: 'name', emitPath: false }"
+            placeholder="请选择文章分类"
+            clearable
+          />
+        </el-form-item>
+
+        <el-form-item label="文章标签">
+          <el-tag v-for="tag in form.dynamicTags" :key="tag" class="mr10" closable :disable-transitions="false" @close="handleCloseTag(tag)">
+            {{ tag }}
+          </el-tag>
+          <el-input
+            v-if="inputVisible"
+            ref="inputRef"
+            v-model="inputValue"
+            class="w20"
+            @keyup.enter="handleInputConfirm"
+            @blur="handleInputConfirm"
+          />
+
+          <el-button v-else class="button-new-tag" size="small" @click="showInput">
+            + 文章标签
+          </el-button>
+        </el-form-item>
+        <el-form-item label="文章封面">
+          <UploadImage ref="uploadRef" v-model="form.coverUrl" :limit="1" :file-size="15" :drag="true" />
+        </el-form-item>
+        <el-form-item prop="content" label="文章内容">
+          <MdEditor v-model="form.content" :on-upload-img="onUploadImg" />
+        </el-form-item>
+
+        <el-col :lg="24">
+          <el-form-item style="text-align: right">
+            <el-button @click="handlePublish('1')">
+              发布文章
+            </el-button>
+            <el-button type="success" @click="handlePublish('2')">
+              存为草稿
+            </el-button>
+          </el-form-item>
+        </el-col>
+      </el-form>
+    </el-row>
+  </div>
+</template>
+
 <style scoped>
 .button-new-tag {
   /* margin-left: 10px; */

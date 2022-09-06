@@ -1,15 +1,9 @@
-<template>
-  <div ref="chartRef" :class="className" :style="{ height: height, width: width }" />
-</template>
-
 <script setup>
 import * as echarts from 'echarts'
 
 // import("echarts/theme/macarons"); // echarts theme
 // import { debounce } from '@/utils'
 import { useDebounceFn } from '@vueuse/core'
-
-const { proxy } = getCurrentInstance()
 
 const props = defineProps({
   name: {
@@ -46,10 +40,13 @@ const props = defineProps({
     default: '300px',
   },
 })
+
+const { proxy } = getCurrentInstance()
+
 let chart = null
 const chartRef = ref()
 
-//重绘图表函数
+// 重绘图表函数
 const resizeHandler = () => {
   chart.resize()
 }
@@ -76,7 +73,7 @@ function initChart() {
 }
 const debouncedFn = useDebounceFn(() => {
   // do something
-	resizeHandler()
+  resizeHandler()
 }, 500)
 
 document.addEventListener('resize', debouncedFn)
@@ -85,6 +82,10 @@ onMounted(() => {
   initChart()
 })
 onBeforeUnmount(() => {
-	window.removeEventListener('resize', debouncedFn)
+  window.removeEventListener('resize', debouncedFn)
 })
 </script>
+
+<template>
+  <div ref="chartRef" :class="className" :style="{ height, width }" />
+</template>

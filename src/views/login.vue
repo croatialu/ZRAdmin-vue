@@ -1,77 +1,7 @@
-<template>
-  <starBackground></starBackground>
-  <div class="login">
-    <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">{{ defaultSettings.title }}</h3>
-
-      <LangSelect title="多语言设置" class="langSet" />
-      <el-form-item prop="username">
-        <el-input v-model="loginForm.username" type="text" size="default" auto-complete="off" :placeholder="$t('login.account')">
-          <template #prefix>
-            <svg-icon name="user" class="el-input__icon input-icon" />
-          </template>
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="password">
-        <el-input
-          v-model="loginForm.password"
-          type="password"
-          size="default"
-          auto-complete="off"
-          :placeholder="$t('login.password')"
-          @keyup.enter="handleLogin">
-          <template #prefix>
-            <svg-icon name="password" class="el-input__icon input-icon" />
-          </template>
-        </el-input>
-      </el-form-item>
-      <el-form-item prop="code" v-if="captchaOnOff != 'off'">
-        <el-input
-          v-model="loginForm.code"
-          size="default"
-          auto-complete="off"
-          :placeholder="$t('login.captcha')"
-          style="width: 63%"
-          @keyup.enter="handleLogin">
-          <template #prefix>
-            <svg-icon name="validCode" class="el-input__icon input-icon" />
-          </template>
-        </el-input>
-        <div class="login-code">
-          <img :src="codeUrl" @click="getCode" class="login-code-img" />
-        </div>
-      </el-form-item>
-
-      <div style="display: flex; justify-content: space-between">
-        <el-checkbox v-model="loginForm.rememberMe">{{ $t('login.rememberMe') }}</el-checkbox>
-        <router-link class="link-type" :to="'/register'">{{ $t('login.register') }}</router-link>
-      </div>
-
-      <el-form-item style="width: 100%">
-        <el-button :loading="loading" size="default" type="primary" style="width: 100%" @click.prevent="handleLogin">
-          <span v-if="!loading">{{ $t('login.btnLogin') }}</span>
-          <span v-else>登 录 中...</span>
-        </el-button>
-      </el-form-item>
-      <div class="other-login">
-        <el-divider>{{ $t('login.otherLoginWay') }}</el-divider>
-        <img src="../assets/icons/gitee-fill-round.png" alt="" class="login-icon" @click="onAuth('GITEE')" />
-        <img src="../assets/icons/github-fill.png" alt="" class="login-icon" @click="onAuth('GITHUB')" />
-        <img src="../assets/icons/wechat-fill.png" alt="" class="login-icon" />
-      </div>
-    </el-form>
-
-    <!--  底部  -->
-    <div class="el-login-footer">
-      <div v-html="defaultSettings.copyright"></div>
-    </div>
-  </div>
-</template>
-
 <script setup name="login">
-import { getCodeImg } from '@/api/system/login'
 import Cookies from 'js-cookie'
-import { encrypt, decrypt } from '@/utils/jsencrypt'
+import { getCodeImg } from '@/api/system/login'
+import { decrypt, encrypt } from '@/utils/jsencrypt'
 import defaultSettings from '@/settings'
 import starBackground from '@/views/components/starBackground.vue'
 import LangSelect from '@/components/LangSelect/index.vue'
@@ -116,7 +46,8 @@ function handleLogin() {
         Cookies.set('username', loginForm.value.username, { expires: 30 })
         Cookies.set('password', encrypt(loginForm.value.password), { expires: 30 })
         Cookies.set('rememberMe', loginForm.value.rememberMe, { expires: 30 })
-      } else {
+      }
+      else {
         // 否则移除
         Cookies.remove('username')
         Cookies.remove('password')
@@ -134,9 +65,8 @@ function handleLogin() {
           proxy.$modal.msgError(error.msg)
           loading.value = false
           // 重新获取验证码
-          if (captchaOnOff.value) {
+          if (captchaOnOff.value)
             getCode()
-          }
         })
     }
   })
@@ -144,7 +74,7 @@ function handleLogin() {
 
 function getCode() {
   getCodeImg().then((res) => {
-    codeUrl.value = 'data:image/gif;base64,' + res.data.img
+    codeUrl.value = `data:image/gif;base64,${res.data.img}`
     loginForm.value.uuid = res.data.uuid
   })
 }
@@ -164,13 +94,91 @@ function onAuth(type) {
 
   switch (type) {
     default:
-      window.location.href = import.meta.env.VITE_APP_BASE_API + '/auth/Authorization?authSource=' + type
+      window.location.href = `${import.meta.env.VITE_APP_BASE_API}/auth/Authorization?authSource=${type}`
       break
   }
 }
 getCode()
 getCookie()
 </script>
+
+<template>
+  <starBackground />
+  <div class="login">
+    <el-form ref="loginRef" :model="loginForm" :rules="loginRules" class="login-form">
+      <h3 class="title">
+        {{ defaultSettings.title }}
+      </h3>
+
+      <LangSelect title="多语言设置" class="langSet" />
+      <el-form-item prop="username">
+        <el-input v-model="loginForm.username" type="text" size="default" auto-complete="off" :placeholder="$t('login.account')">
+          <template #prefix>
+            <svg-icon name="user" class="el-input__icon input-icon" />
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="password">
+        <el-input
+          v-model="loginForm.password"
+          type="password"
+          size="default"
+          auto-complete="off"
+          :placeholder="$t('login.password')"
+          @keyup.enter="handleLogin"
+        >
+          <template #prefix>
+            <svg-icon name="password" class="el-input__icon input-icon" />
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item v-if="captchaOnOff != 'off'" prop="code">
+        <el-input
+          v-model="loginForm.code"
+          size="default"
+          auto-complete="off"
+          :placeholder="$t('login.captcha')"
+          style="width: 63%"
+          @keyup.enter="handleLogin"
+        >
+          <template #prefix>
+            <svg-icon name="validCode" class="el-input__icon input-icon" />
+          </template>
+        </el-input>
+        <div class="login-code">
+          <img :src="codeUrl" class="login-code-img" @click="getCode">
+        </div>
+      </el-form-item>
+
+      <div style="display: flex; justify-content: space-between">
+        <el-checkbox v-model="loginForm.rememberMe">
+          {{ $t('login.rememberMe') }}
+        </el-checkbox>
+        <router-link class="link-type" to="/register">
+          {{ $t('login.register') }}
+        </router-link>
+      </div>
+
+      <el-form-item style="width: 100%">
+        <el-button :loading="loading" size="default" type="primary" style="width: 100%" @click.prevent="handleLogin">
+          <span v-if="!loading">{{ $t('login.btnLogin') }}</span>
+          <span v-else>登 录 中...</span>
+        </el-button>
+      </el-form-item>
+      <div class="other-login">
+        <el-divider>{{ $t('login.otherLoginWay') }}</el-divider>
+        <img src="../assets/icons/gitee-fill-round.png" alt="" class="login-icon" @click="onAuth('GITEE')">
+        <img src="../assets/icons/github-fill.png" alt="" class="login-icon" @click="onAuth('GITHUB')">
+        <img src="../assets/icons/wechat-fill.png" alt="" class="login-icon">
+      </div>
+    </el-form>
+
+    <!--  底部  -->
+    <div class="el-login-footer">
+      <div v-html="defaultSettings.copyright" />
+    </div>
+  </div>
+</template>
 
 <style lang="scss" scoped>
 @import '@/assets/styles/login.scss';

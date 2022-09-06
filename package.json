@@ -4,15 +4,17 @@
   "description": "ZRAdmin.NET管理系统",
   "author": "ZR",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/izory/ZrAdminNetCore"
+  },
   "scripts": {
     "dev": "vite",
     "build:prod": "vite build",
     "build:stage": "vite build --mode staging",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://gitee.com/izory/ZrAdminNetCore"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^0.2.7",
@@ -42,9 +44,12 @@
     "vue3-seamless-scroll": "^1.2.0"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^0.26.3",
     "@vitejs/plugin-vue": "^2.3.3",
     "@vue/compiler-sfc": "^3.2.33",
+    "eslint": "^8.23.0",
     "sass": "1.45.0",
+    "typescript": "^4.8.2",
     "unplugin-auto-import": "0.5.3",
     "vite": "^2.9.14",
     "vite-plugin-compression": "^0.3.6",
